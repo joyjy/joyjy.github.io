@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>欢迎来到动态链接库地狱</title>
+  <meta name="description" content="——起初，我在邮件列表里见到这句话的时候，还不能理解它背后的泪水有多深。">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://blog.joyjy.im/2015/02/08/welcome-to-the-dll-hell.html">
+  <link rel="alternate" type="application/rss+xml" title="I, JoYJY" href="http://blog.joyjy.im/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+    <a class="site-title" href="/">I, JoYJY</a>
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">欢迎来到动态链接库地狱</h1>
+    <p class="post-meta">2015年2月8日</p>
+  </header>
+
+  <article class="post-content">
+    <p>——起初，我在邮件列表里见到这句话的时候，还不能理解它背后的泪水有多深。</p>
+
+<p>标题党了，其实这篇文章的重点不是这个。
+微软出了包管理器 Nuget（好事），在使用的过程中再次见识到了人类的创造性（好事，但不要发生在这里啦）。</p>
+
+<h2>IDE，VCS 和 Package Manager</h2>
+
+<ul>
+<li>IDE：集成开发环境</li>
+<li>VCS：版本控制系统</li>
+<li>Package (Depencency) Manager：包依赖管理器</li>
+</ul>
+
+
+<p>IDE 是可以集成其他两项功能的，但如果操作的时候概念不清晰，就会造成一大堆麻烦事。最后的结果就是生成的时候变成一团乱麻。</p>
+
+<p>那么这三者在源码的构建过程中是如何协作的呢？以我们的环境（Visual Studio，TFS，Nuget）说明：</p>
+
+<p>VS 以解决方案为单位组织源码，解决方案文件夹映射到文件系统文件夹。解决方案下有多个项目，可以位于不同的文件系统文件夹。项目可以引用解决方案内的其他项目或任意文件位置的 .dll 文件，引用会被声明在 .csproj 文件中：</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;ProjectReference</span> <span class="na">Include=</span><span class="s">&quot;..\ProjectFolder\Project.csproj&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;Project&gt;</span>{e737ac4a-1ea8-4fae-8b7b-05b908608f2d}<span class="nt">&lt;/Project&gt;</span>
+    <span class="nt">&lt;Name&gt;</span>ProjectName<span class="nt">&lt;/Name&gt;</span>
+<span class="nt">&lt;/ProjectReference&gt;</span>
+
+<span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">&quot;DllName&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;HintPath&gt;</span>..\Lib\Dll.dll<span class="nt">&lt;/HintPath&gt;</span>
+<span class="nt">&lt;/Reference&gt;</span></code></pre></div>
+
+
+<p>Nuget 使用项目下的 packages.config 管理 dll 引用，当添加 Nuget 包时会进行以下操作：
+    1. 下载 .dll 文件到解决方案映射的文件系统文件夹中的 \packages 目录下；
+    2. 修改项目 packages.config 文件，添加要引用的 Nuget 包信息；
+    3. 修改项目 .csproj 文件，添加下载下来的包中的 dll 引用。</p>
+
+<p>TFS 默认只管理解决方案创建时映射到的文件系统文件夹，\packages 文件夹默认不会添加到源码管理中。</p>
+
+<p><img src="/assets/nuget-vs-and-tfs.png" alt="nuget,vs and tfs" /></p>
+
+<p>要注意的是源码管理是只关心它监视的文件的，只是服务器上也有一套集成环境在构建的时候用来做和本地一样的事。</p>
+
+<h2>说多了都是泪</h2>
+
+<p>有部分开发人员没有搞清楚解决方案文件夹，解决方案映射到的文件系统文件夹和TFS源码管理文件夹，造成过以下问题；</p>
+
+<ol>
+<li><p>文件直接拖动到了 Visual Studio 里</p>
+
+<p> 是的，VS 支持这样的操作，然后，它会在自己的 .csproj 里添加一个 &lt;Compile>（表示是需要编译的文件，如果是静态文件会是 &lt;Content>）节点，记录该文件的文件路径。</p>
+
+<ul>
+<li>这样自然会找不到了；</li>
+<li>把文件签入到源码管理也不行，那东西用的是相对路径；</li>
+<li>而且各处的相对路径关系还要一致。</li>
+</ul>
+</li>
+<li><p>引用了另外一个项目 \bin 下的 .dll 文件</p>
+
+<ul>
+<li>\bin 默认是不会被添加到源代码管理的（都是自动生成的二进制文件版本控制个啥）；</li>
+<li>不知道这样操作的原意是不是项目引用，如果是跨解决方案项目引用而有没有声明为依赖的话，那个项目根本不会生成，也就没有指定的 dll；</li>
+<li>手动添加了，其他开发者那里生成就会冲突。</li>
+</ul>
+</li>
+<li><p>添加到源码管理时没有包含 .dll 文件</p>
+
+<ul>
+<li>这是 TFS 的特性了，向源码管理中添加文件夹，自动会把 .dll 等文件过滤掉，在最后一步列在“排除项”选项卡中，需要手动包含；</li>
+<li>不仔细看界面的人，你们的电脑上有多少捆绑的插件？</li>
+</ul>
+</li>
+<li><p>解决方案文件夹不是真实的</p>
+
+<ul>
+<li>建立一个解决方案文件夹，它在文件系统里是没有的；</li>
+<li>他们就是这么设计的，所以搞乱了也能使；</li>
+<li>但是你会死的很惨。</li>
+</ul>
+</li>
+<li><p>特定框架依赖</p>
+
+<ul>
+<li>有的 dll 是框架提供的，不同机器上有可能有微小的版本号差异，把<em>引用 -> 右键属性 -> 特定版本</em>修改为 False；</li>
+<li>要部署的服务器没安装过框架，还是<em>属性 -> 复制到输出</em>修改为 True。（dll 查找加载顺序是运行目录 > 注册的框架 > 系统）</li>
+</ul>
+</li>
+<li><p>TFS 上的 Nuget 还原不工作</p>
+
+<ul>
+<li>如果用私服了需要配置；</li>
+<li>不过只要源码管理里 \packages 文件夹里有文件就可以了，而且还原很慢所以我们都这么玩；</li>
+<li>有时候会发现解决方案里已安装的 Nuget 包没有安装到任何一个项目里，这时就该把它从 \packages 文件夹删掉了；</li>
+</ul>
+</li>
+<li><p>分支导致了项目相对路径变化</p>
+
+<ul>
+<li>分支的时候<strong>不要变换目录层级</strong>；</li>
+<li>这样至少还引用的是同样的跨解决方案项目；</li>
+<li>引用的项目也需要分支？上帝保佑你。</li>
+</ul>
+</li>
+<li><p>跨解决方案引用被 Nuget 还原更改了源路径</p>
+
+<ul>
+<li>事情是这样的：
+
+<ol>
+<li>解决方案 A 引用了解决方案 B 中一个使用了 Nuget 包的项目（就叫它 ProjectB 好了）；</li>
+<li>本地没有这两个解决方案（至少没有它们的 \packages 文件夹）；</li>
+<li>打开解决方案 A，Nuget 检测到缺少 dll 需要下载，提示 Nuget 还原；</li>
+<li>Nuget 还原下载 dll 到解决方案 A 的 \packages 文件夹，更新所有声明了这个包的项目引用，其中包括 ProjectB；</li>
+<li>签入了 ProjectB；</li>
+</ol>
+</li>
+<li>如果有跨解决方案引用项目，先去那个解决方案生成通过再回来开发。</li>
+</ul>
+</li>
+<li><p>不同项目引用了不同版本 Nuget，生成顺序导致覆盖</p>
+
+<ul>
+<li><strong>在·解·决·方·案·里·管·理·N·u·g·e·t</strong>；</li>
+<li>都用最高版本；</li>
+<li>被依赖版本不需要卸载，直接用高版本勾选低版本安装到的项目就可以覆盖。</li>
+</ul>
+</li>
+<li><p>Nuget 的 packages.config 和实际引用的 dll 不一致</p>
+
+<ul>
+<li>我不知道他们怎么做到的；</li>
+<li>他们做到了；</li>
+<li>我手动改回来的，让我死。</li>
+</ul>
+</li>
+</ol>
+
+
+<h2>此处应该有总结</h2>
+
+<p>有很多问题是混用不同包管理策略引起的，所以第一就是……不要混用不同包管理策略……</p>
+
+<p>第二，<s>我们要从薪资上打击敌人！<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup></s>减少依赖会降低复杂度（大概）；</p>
+
+<p>第三，最好把它们是怎么协作的搞懂，反正原理应该差不多就这样了。</p>
+
+<p>另外，当向源码管理中提交的时候，看一下变更列表，发现有<strong>咦我没有改过</strong>的文件时，看一眼它被改了什么。</p>
+
+<p>另另外，如果需要指定版本的 Nuget，可以利用还原功能实现。</p>
+<div class="footnotes">
+<hr/>
+<ol>
+<li id="fn:1">
+<p>出自<a href="http://book.douban.com/subject/1427322/">《战争学徒》</a><a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
+</ol>
+</div>
+
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li><a href="mailto:joyjy2ah@gmail.com">joyjy2ah@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/joyjy">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">joyjy</span>
+            </a>
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/joyjy2ah">
+              <span class="icon  icon--twitter">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809
+                  c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/>
+                </svg>
+              </span>
+
+              <span class="username">joyjy2ah</span>
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text"><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="知识共享许可协议" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a> 所有文章使用<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a>进行许可。<br /><br /></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

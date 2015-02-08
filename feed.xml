@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>I, JoYJY</title>
+    <description></description>
+    <link>http://blog.joyjy.im/</link>
+    <atom:link href="http://blog.joyjy.im/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Sun, 08 Feb 2015 08:52:25 +0800</pubDate>
+    <lastBuildDate>Sun, 08 Feb 2015 08:52:25 +0800</lastBuildDate>
+    <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>欢迎来到动态链接库地狱</title>
+        <description>&lt;p&gt;——起初，我在邮件列表里见到这句话的时候，还不能理解它背后的泪水有多深。&lt;/p&gt;
+
+&lt;p&gt;标题党了，其实这篇文章的重点不是这个。
+微软出了包管理器 Nuget（好事），在使用的过程中再次见识到了人类的创造性（好事，但不要发生在这里啦）。&lt;/p&gt;
+
+&lt;h2&gt;IDE，VCS 和 Package Manager&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;IDE：集成开发环境&lt;/li&gt;
+&lt;li&gt;VCS：版本控制系统&lt;/li&gt;
+&lt;li&gt;Package (Depencency) Manager：包依赖管理器&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;IDE 是可以集成其他两项功能的，但如果操作的时候概念不清晰，就会造成一大堆麻烦事。最后的结果就是生成的时候变成一团乱麻。&lt;/p&gt;
+
+&lt;p&gt;那么这三者在源码的构建过程中是如何协作的呢？以我们的环境（Visual Studio，TFS，Nuget）说明：&lt;/p&gt;
+
+&lt;p&gt;VS 以解决方案为单位组织源码，解决方案文件夹映射到文件系统文件夹。解决方案下有多个项目，可以位于不同的文件系统文件夹。项目可以引用解决方案内的其他项目或任意文件位置的 .dll 文件，引用会被声明在 .csproj 文件中：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;ProjectReference&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Include=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;..\ProjectFolder\Project.csproj&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;Project&amp;gt;&lt;/span&gt;{e737ac4a-1ea8-4fae-8b7b-05b908608f2d}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Project&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;Name&amp;gt;&lt;/span&gt;ProjectName&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Name&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ProjectReference&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;Reference&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Include=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;DllName&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;HintPath&amp;gt;&lt;/span&gt;..\Lib\Dll.dll&lt;span class=&quot;nt&quot;&gt;&amp;lt;/HintPath&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Reference&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Nuget 使用项目下的 packages.config 管理 dll 引用，当添加 Nuget 包时会进行以下操作：
+    1. 下载 .dll 文件到解决方案映射的文件系统文件夹中的 \packages 目录下；
+    2. 修改项目 packages.config 文件，添加要引用的 Nuget 包信息；
+    3. 修改项目 .csproj 文件，添加下载下来的包中的 dll 引用。&lt;/p&gt;
+
+&lt;p&gt;TFS 默认只管理解决方案创建时映射到的文件系统文件夹，\packages 文件夹默认不会添加到源码管理中。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/nuget-vs-and-tfs.png&quot; alt=&quot;nuget,vs and tfs&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;要注意的是源码管理是只关心它监视的文件的，只是服务器上也有一套集成环境在构建的时候用来做和本地一样的事。&lt;/p&gt;
+
+&lt;h2&gt;说多了都是泪&lt;/h2&gt;
+
+&lt;p&gt;有部分开发人员没有搞清楚解决方案文件夹，解决方案映射到的文件系统文件夹和TFS源码管理文件夹，造成过以下问题；&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;文件直接拖动到了 Visual Studio 里&lt;/p&gt;
+
+&lt;p&gt; 是的，VS 支持这样的操作，然后，它会在自己的 .csproj 里添加一个 &amp;lt;Compile&gt;（表示是需要编译的文件，如果是静态文件会是 &amp;lt;Content&gt;）节点，记录该文件的文件路径。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;这样自然会找不到了；&lt;/li&gt;
+&lt;li&gt;把文件签入到源码管理也不行，那东西用的是相对路径；&lt;/li&gt;
+&lt;li&gt;而且各处的相对路径关系还要一致。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;引用了另外一个项目 \bin 下的 .dll 文件&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;\bin 默认是不会被添加到源代码管理的（都是自动生成的二进制文件版本控制个啥）；&lt;/li&gt;
+&lt;li&gt;不知道这样操作的原意是不是项目引用，如果是跨解决方案项目引用而有没有声明为依赖的话，那个项目根本不会生成，也就没有指定的 dll；&lt;/li&gt;
+&lt;li&gt;手动添加了，其他开发者那里生成就会冲突。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;添加到源码管理时没有包含 .dll 文件&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;这是 TFS 的特性了，向源码管理中添加文件夹，自动会把 .dll 等文件过滤掉，在最后一步列在“排除项”选项卡中，需要手动包含；&lt;/li&gt;
+&lt;li&gt;不仔细看界面的人，你们的电脑上有多少捆绑的插件？&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;解决方案文件夹不是真实的&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;建立一个解决方案文件夹，它在文件系统里是没有的；&lt;/li&gt;
+&lt;li&gt;他们就是这么设计的，所以搞乱了也能使；&lt;/li&gt;
+&lt;li&gt;但是你会死的很惨。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;特定框架依赖&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;有的 dll 是框架提供的，不同机器上有可能有微小的版本号差异，把&lt;em&gt;引用 -&gt; 右键属性 -&gt; 特定版本&lt;/em&gt;修改为 False；&lt;/li&gt;
+&lt;li&gt;要部署的服务器没安装过框架，还是&lt;em&gt;属性 -&gt; 复制到输出&lt;/em&gt;修改为 True。（dll 查找加载顺序是运行目录 &gt; 注册的框架 &gt; 系统）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;TFS 上的 Nuget 还原不工作&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;如果用私服了需要配置；&lt;/li&gt;
+&lt;li&gt;不过只要源码管理里 \packages 文件夹里有文件就可以了，而且还原很慢所以我们都这么玩；&lt;/li&gt;
+&lt;li&gt;有时候会发现解决方案里已安装的 Nuget 包没有安装到任何一个项目里，这时就该把它从 \packages 文件夹删掉了；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;分支导致了项目相对路径变化&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;分支的时候&lt;strong&gt;不要变换目录层级&lt;/strong&gt;；&lt;/li&gt;
+&lt;li&gt;这样至少还引用的是同样的跨解决方案项目；&lt;/li&gt;
+&lt;li&gt;引用的项目也需要分支？上帝保佑你。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;跨解决方案引用被 Nuget 还原更改了源路径&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;事情是这样的：
+
+&lt;ol&gt;
+&lt;li&gt;解决方案 A 引用了解决方案 B 中一个使用了 Nuget 包的项目（就叫它 ProjectB 好了）；&lt;/li&gt;
+&lt;li&gt;本地没有这两个解决方案（至少没有它们的 \packages 文件夹）；&lt;/li&gt;
+&lt;li&gt;打开解决方案 A，Nuget 检测到缺少 dll 需要下载，提示 Nuget 还原；&lt;/li&gt;
+&lt;li&gt;Nuget 还原下载 dll 到解决方案 A 的 \packages 文件夹，更新所有声明了这个包的项目引用，其中包括 ProjectB；&lt;/li&gt;
+&lt;li&gt;签入了 ProjectB；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;如果有跨解决方案引用项目，先去那个解决方案生成通过再回来开发。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;不同项目引用了不同版本 Nuget，生成顺序导致覆盖&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;在·解·决·方·案·里·管·理·N·u·g·e·t&lt;/strong&gt;；&lt;/li&gt;
+&lt;li&gt;都用最高版本；&lt;/li&gt;
+&lt;li&gt;被依赖版本不需要卸载，直接用高版本勾选低版本安装到的项目就可以覆盖。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Nuget 的 packages.config 和实际引用的 dll 不一致&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;我不知道他们怎么做到的；&lt;/li&gt;
+&lt;li&gt;他们做到了；&lt;/li&gt;
+&lt;li&gt;我手动改回来的，让我死。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;h2&gt;此处应该有总结&lt;/h2&gt;
+
+&lt;p&gt;有很多问题是混用不同包管理策略引起的，所以第一就是……不要混用不同包管理策略……&lt;/p&gt;
+
+&lt;p&gt;第二，&lt;s&gt;我们要从薪资上打击敌人！&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/s&gt;减少依赖会降低复杂度（大概）；&lt;/p&gt;
+
+&lt;p&gt;第三，最好把它们是怎么协作的搞懂，反正原理应该差不多就这样了。&lt;/p&gt;
+
+&lt;p&gt;另外，当向源码管理中提交的时候，看一下变更列表，发现有&lt;strong&gt;咦我没有改过&lt;/strong&gt;的文件时，看一眼它被改了什么。&lt;/p&gt;
+
+&lt;p&gt;另另外，如果需要指定版本的 Nuget，可以利用还原功能实现。&lt;/p&gt;
+&lt;div class=&quot;footnotes&quot;&gt;
+&lt;hr/&gt;
+&lt;ol&gt;
+&lt;li id=&quot;fn:1&quot;&gt;
+&lt;p&gt;出自&lt;a href=&quot;http://book.douban.com/subject/1427322/&quot;&gt;《战争学徒》&lt;/a&gt;&lt;a href=&quot;#fnref:1&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+
+</description>
+        <pubDate>Sun, 08 Feb 2015 00:00:00 +0800</pubDate>
+        <link>http://blog.joyjy.im/2015/02/08/welcome-to-the-dll-hell.html</link>
+        <guid isPermaLink="true">http://blog.joyjy.im/2015/02/08/welcome-to-the-dll-hell.html</guid>
+        
+        
+      </item>
+    
+  </channel>
+</rss>

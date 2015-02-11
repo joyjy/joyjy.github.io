@@ -5,9 +5,9 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>I, JoYJY</title>
+  <title>代码复查对照表</title>
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://blog.joyjy.im/">
+  <link rel="canonical" href="http://blog.joyjy.im/2015/02/11/code-review-checklist.html">
   <link rel="alternate" type="application/rss+xml" title="I, JoYJY" href="http://blog.joyjy.im/feed.xml" />
   <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -53,26 +53,90 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">2015年2月11日</span>
+        <div class="post">
 
-        <h2>
-          <a class="post-link" href="/2015/02/11/code-review-checklist.html">代码复查对照表</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">2015年2月8日</span>
+  <header class="post-header">
+    <h1 class="post-title">代码复查对照表</h1>
+    <p class="post-meta">2015年2月11日</p>
+  </header>
 
-        <h2>
-          <a class="post-link" href="/2015/02/08/welcome-to-the-dll-hell.html">欢迎来到动态链接库地狱</a>
-        </h2>
-      </li>
-    
-  </ul>
+  <article class="post-content">
+    <blockquote><p>Make Lists, Not War.
+ - workflowy.com</p></blockquote>
+
+<p>最近在试用 <a href="https://workflowy.com/invite/2a92edbd.lnx">Workflowy</a>（我的推广注册链接，验证邮箱后两个人每月都可以增加 250 个节点，反感的话用引言那样没有尾巴的连接即可），深深觉得清单是个好东西，正在<s>三分钟热度地</s>把之前屯的东西整理知识点出来。</p>
+
+<p>待得<a href="http://www.techug.com/increase-defect-detection-with-our-code-review-checklist-example">《对照审查点清单做代码审查可消除更多的bug》</a>一文，<a href="https://workflowy.com/s/X2ExZFccro">抄了一遍</a>之后觉得不够，对照自己平时的情况略作删改：</p>
+
+<ol>
+<li>代码结构是否符合规范</li>
+<li>代码命名是否符合规范</li>
+<li>系统输入输出是否符合文档 <em>// 需要接口文档</em></li>
+<li>代码逻辑是否符合预期 <em>// 需要流程图 &amp;&amp; 项目经理认可</em>
+
+<ul>
+<li>是否正确处理事务</li>
+</ul>
+</li>
+<li>注释是否容易理解 <em>// <strong>注释是为了说明why而不是what</strong></em></li>
+<li>代码是否容易理解
+
+<ul>
+<li>实际操作是否被用于逻辑控制</li>
+<li>循环
+
+<ul>
+<li>是否嵌套过深</li>
+<li>能否正确结束</li>
+<li>中途错误时应该 <code>break</code> 还是 <code>continue</code>，为什么</li>
+</ul>
+</li>
+<li>分支是否采用 <code>if...return</code> 而不是 <code>if..else...</code></li>
+<li>三元表达式一眼就可理解吗</li>
+<li>递归能让代码变得更好理解吗</li>
+</ul>
+</li>
+<li>是否存在风格不良代码
+
+<ul>
+<li>重复的代码</li>
+<li>多余的代码</li>
+<li>注释的代码</li>
+<li>重复实现了类库提供功能</li>
+<li>日志和调试代码参与流程</li>
+</ul>
+</li>
+<li>安全
+
+<ul>
+<li>输入是否经过校验</li>
+<li>数据传输是否正确编解码
+
+<ul>
+<li>编码和解码次数是否一致（注意框架的行为）</li>
+<li>编码后传输是否存在特殊字符</li>
+</ul>
+</li>
+<li>输出的数据是否存在需要掩藏的部分</li>
+<li>第三方工具的错误是否被正确处理了</li>
+<li>是否处理了边界值</li>
+<li>是否有未捕获异常的统一处理</li>
+<li>所有的异常都能被记录吗</li>
+</ul>
+</li>
+<li>文档
+
+<ul>
+<li>是否存在接口文档</li>
+<li>是否存在数据字典</li>
+<li>未实现的方法到底是 NotImplemented 还是 NotSupported</li>
+</ul>
+</li>
+</ol>
+
+
+  </article>
+
 </div>
 
       </div>

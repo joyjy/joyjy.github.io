@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RSA 算法学习笔记及 C# 公钥解密实现</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://blog.joyjy.im/2015/12/11/rsa-decryption-with-public-key.html">
+  <link rel="alternate" type="application/rss+xml" title="I, JoYJY" href="http://blog.joyjy.im/feed.xml" />
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-59482785-1', 'auto');
+  ga('send', 'pageview');
+ </script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+    <a class="site-title" href="/">I, JoYJY</a>
+    
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">RSA 算法学习笔记及 C# 公钥解密实现</h1>
+    <p class="post-meta">2015年12月11日</p>
+  </header>
+
+  <article class="post-content">
+    <p>事情的起因是：友商提供的接口验签方式是用他们的公钥解密一段 RSA 加密的字符串然后和明文进行相等比较。</p>
+
+<p>然而 .Net 并不提供 RSA 公钥解密算法实现，在 <a href="https://msdn.microsoft.com/zh-cn/library/system.security.cryptography.rsacryptoserviceprovider\(v=vs.100\).aspx" target="_blank">MSDN</a> 里明确指出<code>Encrypt</code>只能用公钥，<code>Decrypt</code>用私钥，<code>SignData</code>也用私钥，那么<code>VerifyData</code>或者<code>VerifyHash</code>自然就只能用公钥；最后，实例化密钥用的<a href="https://msdn.microsoft.com/zh-cn/library/system.security.cryptography.rsaparameters(v=vs.100).aspx" target="_blank"><code>RSAParameters</code></a>结构要么从 XML 导入，要么手动给以下属性赋值（顺便提一句，这些属性全都是二进制数组）：</p>
+
+<p><img src="/assets/rsa_parameters_please_saying_english.png" alt="" /></p>
+
+<p><img src="/assets/are_you_fucking_kidding_me.jpg" alt="" /></p>
+
+<p>当时花了挺长时间学习实现了一段公钥解密代码，今天友商提供了之前不支持的 2048 位密钥，在数二进制的时候发现自己忘得差不多了，于是就整理一下写下来。</p>
+
+<h2>RSA 算法原理</h2>
+
+<p>这一节的内容主要来源于 <a href="http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html" target="_blank">阮一峰：RSA算法原理（二）</a>。</p>
+
+<p>请尝试计算下面两个式子：</p>
+
+<pre><code>(65^17)%3233 // 65 的 17 次方对 3233 求余
+(2790^2753)%3233 // 2790 的 2753 次方对 3233 求余
+</code></pre>
+
+<p>一般的计算器比较困难，不过我们有天生支持大整数的 python：</p>
+
+<pre><code class="python">&gt;&gt;&gt; divmod(pow(65,17),3233)
+(2041368261935227977399887995L, 2790L)
+&gt;&gt;&gt; divmod(pow(2790,2753),3233)
+(1732&lt;此处省略9475位数字&gt;1695L, 65L)
+</code></pre>
+
+<p>一开始的 65 经过了和 17、3233 的运算，得到余数 2790；然后 2790 和 2753 以及又一个 3233 的运算，又回到了 65。这就是 RSA 的原理。</p>
+
+<p>不要急着动粗。你猜的对，这个论述省略了很多东西。</p>
+
+<h3>首先是定义和名字</h3>
+
+<p>在 17，3233，2753 这三个数中：</p>
+
+<ol>
+<li>3233（算法中符号是 n，此后同）是任意选取的两个质数 61（p） 和 53（q） 的乘积；</li>
+<li>17（e） 是介于 1 和 (61-1)*(53-1)=3120 之间，并且和 3120 互质的一个随机数；</li>
+<li>2753（d） 是 17 对于 3120 的模反元素<sup>1</sup>；</li>
+</ol>
+
+
+<p>在 RSA 算法 PKCS#1 的定义中：</p>
+
+<ul>
+<li>17（e） 叫做 publicExponent，公钥指数；</li>
+<li>3233（n） 叫做 modulus；</li>
+<li>2753（d） 叫做 privateExponent，私钥指数；</li>
+</ul>
+
+
+<p>那么所谓的公钥，就是 {e, n} 这一对整数，而私钥则是 {d, n}。</p>
+
+<h3>因式分解是很困难的</h3>
+
+<p>在已知 {e, n} 的情况下，想要得到 d，唯一（不一定，但反正还没有证明）的办法就是通过 n 因式分解得到 p 和 q；RSA 算法的安全性就在于保证这两个数足够大，让没有计算机能够在允许的时间成本内计算出结果。上面的例子中 3233 写成二进制是 12 位，那它就是一个 12 位的密钥，现实的应用中，使用的主要是 1024 和 2048 位的密钥；</p>
+
+<p>不过说起来，好像已经有<a href="http://www.solidot.org/story?sid=46469" target="_blank">能用的量子计算机<sup>2</sup></a>了。不知道这次这台“万能解密机”会不会被人炸掉<sup>3</sup>。</p>
+
+<h2>公钥解密实现</h2>
+
+<p>有了上面的原理，再加上 .Net Frameworks 4.0 里已经提供了<a href="https://msdn.microsoft.com/zh-cn/library/system.numerics.BigInteger(v=vs.100).aspx" target="_blank"><code>BigInteger</code></a>类，看起来这个问题没有一开始那么吓人了，撸起袖子上吧：</p>
+
+<pre><code class="csharp">var modulus = BigInteger.Parse(modulusString);
+var exponent = BigInteger.Parse(exponentString);
+
+var encryptBytes = Convert.FromBase64String(encryptText);
+var value = new BigInteger(encryptBytes);
+
+var result = BigInteger.ModPow(value, exponent, modulus);
+var resultBytes = result.ToByteArray();
+
+return Encoding.UTF8.GetString(resultBytes);
+</code></pre>
+
+<p>执行以上代码将无法得到正确结果，是因为 BigInteger 在使用字节数组初始化的时候，要求参数使用小<a href="https://zh.wikipedia.org/zh/%E5%AD%97%E8%8A%82%E5%BA%8F" target="_blank">字节序</a>，应当进行如下修改：</p>
+
+<pre><code>var modulus = BigInteger.Parse(modulusString);
+var exponent = BigInteger.Parse(exponentString);
+
+var encryptBytes = Convert.FromBase64String(text);
+Array.Reverse(encryptBytes); // 需要调整字节序，BigIntenger 需要 little-endian
+if ((encryptBytes[encryptBytes.Length - 1] &amp; 0x80) &gt; 0) // 如果最后一个字节第一位为1，追加一个 00 避免生成负数
+{
+    var temp = new byte[encryptBytes.Length];
+    Array.Copy(encryptBytes, temp, encryptBytes.Length);
+    encryptBytes = new byte[temp.Length + 1];
+    Array.Copy(temp, encryptBytes, temp.Length);
+}
+var value = new BigInteger(encryptBytes);
+
+var result = BigInteger.ModPow(value, exponent, modulus);
+var resultBytes = result.ToByteArray();
+Array.Reverse(resultBytes); // 调整顺序
+
+int index = Array.FindIndex(resultBytes, b =&gt; b == 0) + 1;
+return Encoding.UTF8.GetString(resultBytes, index, resultBytes.Length - index); // 排除掉旋转后多余的0
+</code></pre>
+
+<p>这段代码勉强达到了可用标准，但还有一些缺陷：</p>
+
+<ol>
+<li><p><code>modulusString</code> 和 <code>exponentString</code> 是从哪块石头里蹦出来的？</p>
+
+<p>答：用 Java 打印的；</p></li>
+<li><p>密文太长和太短的情况下都有乱码，为什么？</p>
+
+<p>答：跟密钥长度相关，具体还不知道；</p></li>
+</ol>
+
+
+<p>由于最迫切的功能实现了，这两个问题也就一直拖了很久。</p>
+
+<h3>公钥内容解析</h3>
+
+<p>相信不少人的类库里都有一个 <code>RsaFromPkcs8</code> 的类，反正我身为一个代码的搬运工，最早是在支付宝给商户的示例代码里看到的，其中有一个 <code>ConvertFromPublikcKey</code> 方法，用于将一串 RSA 公钥字符串解析成 <code>RSAParameters</code>，里面有几个<a href="https://zh.wikipedia.org/wiki/%E9%AD%94%E8%A1%93%E6%95%B8%E5%AD%97" target="_blank">魔法数字</a>：</p>
+
+<pre><code>private static RSAParameters ConvertFromPublicKey(string pemFileConent)
+{
+    byte[] keyData = Convert.FromBase64String(pemFileConent);
+    if (keyData.Length &lt; 162)
+    {
+        throw new ArgumentException("pem file content is incorrect.");
+    }
+    byte[] pemModulus = new byte[128];
+    byte[] pemPublicExponent = new byte[3];
+    Array.Copy(keyData, 29, pemModulus, 0, 128);
+    Array.Copy(keyData, 159, pemPublicExponent, 0, 3);
+    RSAParameters para = new RSAParameters();
+    para.Modulus = pemModulus;
+    para.Exponent = pemPublicExponent;
+    return para;
+}
+</code></pre>
+
+<p>有了上面的基础知识，我们已经知道了公钥里有两个整数，分别是 modulus 和 publicExponent，这段代码赋值给 Modulus 属性是个长度 128 的字节数组，那就是说这段代码针对的是 128*8=1024 位的密钥。道理我都懂，可魔法数字到底是哪来的？</p>
+
+<p>本来我是不需要知道答案的。但随着友商的增多，出现了 512 位的密钥，这个方法理所应当地报错了，因此必须修改代码支持 512 和 2048 位的公钥。</p>
+
+<p>PKCS#1 中规定了 RSA 的公私钥格式，在 PKCS#8 中，规定了 Apache 读取证书私钥的标准。公钥使用 <a href="https://zh.wikipedia.org/zh-cn/ASN.1" target="_blank">ASN.1</a> 编码，感谢<a href="http://boytnt.blog.51cto.com/966121/1351089" target="_blank">兔子窝：C#与Java的RSA（2）</a>这篇文章（咦，为什么又是2…），照着他完成了 512 和 2048 位密钥的硬编码：找到<code>03（BIT STRING）</code>后的<code>30（SEQUENCE）</code>后的<code>02（INTEGER）</code>，再读取 INTEGER 节指定的字节长度（注意区分长形式和短形式），跳过开头的<code>00</code>后面的数据就是公钥的 modulus，而 publicExponent 是同理下一个整数；于是，我们就得到了……更多魔法数字！</p>
+
+<pre><code>private static RSAParameters ConvertPublicKey(string pemPublicKey)
+{
+    byte[] keyBytes = Convert.FromBase64String(pemPublicKey);
+    byte[] modulus;
+    switch (keyBytes.Length)
+    {
+        case 94: // 64×8=512位密钥固定长度
+            modulus = new byte[64];
+            Array.Copy(keyBytes, 25, modulus, 0, modulus.Length);
+            break;
+        case 162: // 128×8=1024位密钥固定长度
+            modulus = new byte[128];
+            Array.Copy(keyBytes, 29, modulus, 0, modulus.Length);
+            break;
+        case 294: // 256×8=2048位密钥固定长度
+            modulus = new byte[256];
+            Array.Copy(keyBytes, 33, modulus, 0, modulus.Length);
+            break;
+        default:
+            throw new NotSupportedException("不支持的公钥长度");
+    }
+    byte[] publicExponent = new byte[3];
+    Array.Copy(keyBytes, keyBytes.Length - 3, publicExponent, 0, 3); // 都是 65537
+
+    return new RSAParameters { Modulus = modulus, Exponent = publicExponent };
+}
+</code></pre>
+
+<p>好消息是这段代码写完，就可以抛弃上一节的 <code>modulusString</code> 和 <code>exponentString</code> 了；以及我终于知道密钥的真实长度是什么了，因此密文过长的问题也一并解决了：</p>
+
+<pre><code>/// &lt;summary&gt;
+/// RSA 公钥解密
+/// &lt;/summary&gt;
+/// &lt;param name="text"&gt;密文&lt;/param&gt;
+/// &lt;param name="pemPublicKey"&gt;Base64编码公钥文本&lt;/param&gt;
+/// &lt;returns&gt;&lt;/returns&gt;
+public static string Decrypt(string text, string pemPublicKey)
+{
+    var publicKey = ConvertPublicKey(pemPublicKey);
+    return Decrypt(text, publicKey);
+}
+
+/// &lt;summary&gt;
+/// RSA 公钥解密
+/// &lt;/summary&gt;
+/// &lt;param name="text"&gt;密文&lt;/param&gt;
+/// &lt;param name="publicKey"&gt;公钥&lt;/param&gt;
+/// &lt;returns&gt;解密后明文&lt;/returns&gt;
+public static string Decrypt(string text, RSAParameters publicKey)
+{
+    var encryptBytes = Convert.FromBase64String(text);
+
+    string result = string.Empty;
+    var modulus = ConvertBigInteger(publicKey.Modulus);
+    var exponent = ConvertBigInteger(publicKey.Exponent);
+
+    int i = 0;
+    while (i &lt; encryptBytes.Length)
+    {
+        // 密文长度必须小于密钥长度
+        var temp = new byte[Math.Min(encryptBytes.Length, publicKey.Modulus.Length)];
+        Array.Copy(encryptBytes, i, temp, 0, temp.Length);
+        // 分段解密并连接
+        result += Decrypt(temp, exponent, modulus);
+        i += temp.Length;
+    }
+    return result;
+}
+
+/// &lt;summary&gt;
+/// RSA 解密
+/// &lt;/summary&gt;
+/// &lt;param name="encryptBytes"&gt;&lt;/param&gt;
+/// &lt;param name="exponent"&gt;&lt;/param&gt;
+/// &lt;param name="modulus"&gt;&lt;/param&gt;
+/// &lt;returns&gt;&lt;/returns&gt;
+private static string Decrypt(byte[] encryptBytes, BigInteger exponent, BigInteger modulus)
+{
+    var value = ConvertBigInteger(encryptBytes);
+    // 密文 ^ publicExponent % modulus = 原文
+    var result = BigInteger.ModPow(value, exponent, modulus);
+
+    byte[] resultBytes = result.ToByteArray();
+    resultBytes = resultBytes.TakeWhile(b =&gt; b != 0).ToArray(); // 排除掉尾部的空数据
+    Array.Reverse(resultBytes); // 调整字节序
+
+    return Encoding.UTF8.GetString(resultBytes);
+}
+
+/// &lt;summary&gt;
+/// 字节数组转换为大整数
+/// &lt;/summary&gt;
+/// &lt;param name="originBytes"&gt;&lt;/param&gt;
+/// &lt;returns&gt;&lt;/returns&gt;
+private static BigInteger ConvertBigInteger(byte[] originBytes)
+{
+    Array.Reverse(originBytes); // 需要调整字节序，BigIntenger 需要 little-endian
+    if ((originBytes[originBytes.Length - 1] &amp; 0x80) &gt; 0) // 如果最后一个字节第一位为1即负数，追加一个 00 避免错误
+    {
+        var temp = new byte[originBytes.Length];
+        Array.Copy(originBytes, temp, originBytes.Length);
+        originBytes = new byte[temp.Length + 1];
+        Array.Copy(temp, originBytes, temp.Length);
+    }
+    return new BigInteger(originBytes);
+}
+</code></pre>
+
+<p>以上是 C# 公钥解密 RSA 的完整算法实现。谢谢大家，Fuck 微软。</p>
+
+<p>[^1]：已知 a 和 c 互质，如果 a*b%c=1，那 b 就是 a 对于 c 的模反元素。<br />
+[^2]：量子算法利用量子的叠加态同时进行更多的运算<strike>，可以制造平行世界（出自<a href="http://book.douban.com/subject/3417499/" target="_blank">《原始人类》</a>）</strike>。<br />
+[^3]：出自<a href="http://book.douban.com/subject/1057206/" target="_blank">《数字城堡》</a>，在书中 NSA 利用这台计算机能够破解任何密码。</p>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li><a href="mailto:joyjy2ah@gmail.com">joyjy2ah@gmail.com</a></li>
+          <li class="rss-subscribe">通过 <a href="/feed.xml">RSS</a> 订阅本站</li>
+
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/joyjy">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">joyjy</span>
+            </a>
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/joyjy2ah">
+              <span class="icon  icon--twitter">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809
+                  c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/>
+                </svg>
+              </span>
+
+              <span class="username">joyjy2ah</span>
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text"><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="知识共享许可协议" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a> 所有文章使用<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a>进行许可。<br /><br /></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

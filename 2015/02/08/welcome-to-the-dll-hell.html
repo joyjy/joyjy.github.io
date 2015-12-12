@@ -10,13 +10,16 @@
   <link rel="canonical" href="http://blog.joyjy.im/2015/02/08/welcome-to-the-dll-hell.html">
   <link rel="alternate" type="application/rss+xml" title="I, JoYJY" href="http://blog.joyjy.im/feed.xml" />
   <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-59482785-1', 'auto');
-  ga('send', 'pageview');
- </script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-59482785-1', 'auto');
+    ga('send', 'pageview');
+  </script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.0.0/styles/tomorrow.min.css">
+  <script src="//cdn.jsdelivr.net/highlight.js/9.0.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
 </head>
 
 
@@ -81,14 +84,15 @@
 
 <p>VS 以解决方案为单位组织源码，解决方案文件夹映射到文件系统文件夹。解决方案下有多个项目，可以位于不同的文件系统文件夹。项目可以引用解决方案内的其他项目或任意文件位置的 .dll 文件，引用会被声明在 .csproj 文件中：</p>
 
-<p><figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;ProjectReference</span> <span class="na">Include=</span><span class="s">"..\ProjectFolder\Project.csproj"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;Project&gt;</span>{e737ac4a-1ea8-4fae-8b7b-05b908608f2d}<span class="nt">&lt;/Project&gt;</span>
-    <span class="nt">&lt;Name&gt;</span>ProjectName<span class="nt">&lt;/Name&gt;</span>
-<span class="nt">&lt;/ProjectReference&gt;</span></p>
+<pre><code class="xml">&lt;ProjectReference Include="..\ProjectFolder\Project.csproj"&gt;
+    &lt;Project&gt;{e737ac4a-1ea8-4fae-8b7b-05b908608f2d}&lt;/Project&gt;
+    &lt;Name&gt;ProjectName&lt;/Name&gt;
+&lt;/ProjectReference&gt;
 
-<p><span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">"DllName"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;HintPath&gt;</span>..\Lib\Dll.dll<span class="nt">&lt;/HintPath&gt;</span>
-<span class="nt">&lt;/Reference&gt;</span></code></pre></figure></p>
+&lt;Reference Include="DllName"&gt;
+    &lt;HintPath&gt;..\Lib\Dll.dll&lt;/HintPath&gt;
+&lt;/Reference&gt;
+</code></pre>
 
 <p>Nuget 使用项目下的 packages.config 管理 dll 引用，当添加 Nuget 包时会进行以下操作：
     1. 下载 .dll 文件到解决方案映射的文件系统文件夹中的 \packages 目录下；

@@ -10,13 +10,16 @@
   <link rel="canonical" href="http://blog.joyjy.im/2015/12/11/rsa-decryption-with-public-key.html">
   <link rel="alternate" type="application/rss+xml" title="I, JoYJY" href="http://blog.joyjy.im/feed.xml" />
   <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-59482785-1', 'auto');
-  ga('send', 'pageview');
- </script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-59482785-1', 'auto');
+    ga('send', 'pageview');
+  </script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.0.0/styles/tomorrow.min.css">
+  <script src="//cdn.jsdelivr.net/highlight.js/9.0.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
 </head>
 
 
@@ -100,7 +103,7 @@
 <ol>
 <li>3233（算法中符号是 n，此后同）是任意选取的两个质数 61（p） 和 53（q） 的乘积；</li>
 <li>17（e） 是介于 1 和 (61-1)*(53-1)=3120 之间，并且和 3120 互质的一个随机数；</li>
-<li>2753（d） 是 17 对于 3120 的模反元素<sup>1</sup>；</li>
+<li>2753（d） 是 17 对于 3120 的模反元素<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>；</li>
 </ol>
 
 
@@ -119,7 +122,7 @@
 
 <p>在已知 {e, n} 的情况下，想要得到 d，唯一（不一定，但反正还没有证明）的办法就是通过 n 因式分解得到 p 和 q；RSA 算法的安全性就在于保证这两个数足够大，让没有计算机能够在允许的时间成本内计算出结果。上面的例子中 3233 写成二进制是 12 位，那它就是一个 12 位的密钥，现实的应用中，使用的主要是 1024 和 2048 位的密钥；</p>
 
-<p>不过说起来，好像已经有<a href="http://www.solidot.org/story?sid=46469" target="_blank">能用的量子计算机<sup>2</sup></a>了。不知道这次这台“万能解密机”会不会被人炸掉<sup>3</sup>。</p>
+<p>不过说起来，好像已经有<a href="http://www.solidot.org/story?sid=46469" target="_blank">能用的量子计算机</a><sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup>了。不知道这次这台“万能解密机”会不会被人炸掉<sup id="fnref:3"><a href="#fn:3" rel="footnote">3</a></sup>。</p>
 
 <h2>公钥解密实现</h2>
 
@@ -139,7 +142,7 @@ return Encoding.UTF8.GetString(resultBytes);
 
 <p>执行以上代码将无法得到正确结果，是因为 BigInteger 在使用字节数组初始化的时候，要求参数使用小<a href="https://zh.wikipedia.org/zh/%E5%AD%97%E8%8A%82%E5%BA%8F" target="_blank">字节序</a>，应当进行如下修改：</p>
 
-<pre><code>var modulus = BigInteger.Parse(modulusString);
+<pre><code class="csharp">var modulus = BigInteger.Parse(modulusString);
 var exponent = BigInteger.Parse(exponentString);
 
 var encryptBytes = Convert.FromBase64String(text);
@@ -179,7 +182,7 @@ return Encoding.UTF8.GetString(resultBytes, index, resultBytes.Length - index); 
 
 <p>相信不少人的类库里都有一个 <code>RsaFromPkcs8</code> 的类，反正我身为一个代码的搬运工，最早是在支付宝给商户的示例代码里看到的，其中有一个 <code>ConvertFromPublikcKey</code> 方法，用于将一串 RSA 公钥字符串解析成 <code>RSAParameters</code>，里面有几个<a href="https://zh.wikipedia.org/wiki/%E9%AD%94%E8%A1%93%E6%95%B8%E5%AD%97" target="_blank">魔法数字</a>：</p>
 
-<pre><code>private static RSAParameters ConvertFromPublicKey(string pemFileConent)
+<pre><code class="csharp">private static RSAParameters ConvertFromPublicKey(string pemFileConent)
 {
     byte[] keyData = Convert.FromBase64String(pemFileConent);
     if (keyData.Length &lt; 162)
@@ -203,7 +206,7 @@ return Encoding.UTF8.GetString(resultBytes, index, resultBytes.Length - index); 
 
 <p>PKCS#1 中规定了 RSA 的公私钥格式，在 PKCS#8 中，规定了 Apache 读取证书私钥的标准。公钥使用 <a href="https://zh.wikipedia.org/zh-cn/ASN.1" target="_blank">ASN.1</a> 编码，感谢<a href="http://boytnt.blog.51cto.com/966121/1351089" target="_blank">兔子窝：C#与Java的RSA（2）</a>这篇文章（咦，为什么又是2…），照着他完成了 512 和 2048 位密钥的硬编码：找到<code>03（BIT STRING）</code>后的<code>30（SEQUENCE）</code>后的<code>02（INTEGER）</code>，再读取 INTEGER 节指定的字节长度（注意区分长形式和短形式），跳过开头的<code>00</code>后面的数据就是公钥的 modulus，而 publicExponent 是同理下一个整数；于是，我们就得到了……更多魔法数字！</p>
 
-<pre><code>private static RSAParameters ConvertPublicKey(string pemPublicKey)
+<pre><code class="csharp">private static RSAParameters ConvertPublicKey(string pemPublicKey)
 {
     byte[] keyBytes = Convert.FromBase64String(pemPublicKey);
     byte[] modulus;
@@ -233,7 +236,7 @@ return Encoding.UTF8.GetString(resultBytes, index, resultBytes.Length - index); 
 
 <p>好消息是这段代码写完，就可以抛弃上一节的 <code>modulusString</code> 和 <code>exponentString</code> 了；以及我终于知道密钥的真实长度是什么了，因此密文过长的问题也一并解决了：</p>
 
-<pre><code>/// &lt;summary&gt;
+<pre><code class="csharp">/// &lt;summary&gt;
 /// RSA 公钥解密
 /// &lt;/summary&gt;
 /// &lt;param name="text"&gt;密文&lt;/param&gt;
@@ -263,7 +266,7 @@ public static string Decrypt(string text, RSAParameters publicKey)
     while (i &lt; encryptBytes.Length)
     {
         // 密文长度必须小于密钥长度
-        var temp = new byte[Math.Min(encryptBytes.Length, publicKey.Modulus.Length)];
+        var temp = new byte[Math.Min(encryptBytes.Length-i, publicKey.Modulus.Length)];
         Array.Copy(encryptBytes, i, temp, 0, temp.Length);
         // 分段解密并连接
         result += Decrypt(temp, exponent, modulus);
@@ -312,10 +315,18 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 </code></pre>
 
 <p>以上是 C# 公钥解密 RSA 的完整算法实现。谢谢大家，Fuck 微软。</p>
+<div class="footnotes">
+<hr/>
+<ol>
+<li id="fn:1">
+<p>已知 a 和 c 互质，如果 a*b%c=1，那 b 就是 a 对于 c 的模反元素。<a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
+<li id="fn:2">
+<p>量子算法利用量子的叠加态同时进行更多的运算<strike>，可以制造平行世界（出自<a href="http://book.douban.com/subject/3417499/" target="_blank">《原始人类》</a>）</strike>。<a href="#fnref:2" rev="footnote">&#8617;</a></p></li>
+<li id="fn:3">
+<p>出自<a href="http://book.douban.com/subject/1057206/" target="_blank">《数字城堡》</a>，在书中 NSA 利用这台计算机能够破解任何密码。<a href="#fnref:3" rev="footnote">&#8617;</a></p></li>
+</ol>
+</div>
 
-<p>[^1]：已知 a 和 c 互质，如果 a*b%c=1，那 b 就是 a 对于 c 的模反元素。<br />
-[^2]：量子算法利用量子的叠加态同时进行更多的运算<strike>，可以制造平行世界（出自<a href="http://book.douban.com/subject/3417499/" target="_blank">《原始人类》</a>）</strike>。<br />
-[^3]：出自<a href="http://book.douban.com/subject/1057206/" target="_blank">《数字城堡》</a>，在书中 NSA 利用这台计算机能够破解任何密码。</p>
 
   </article>
 

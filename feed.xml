@@ -50,7 +50,7 @@
 &lt;ol&gt;
 &lt;li&gt;3233（算法中符号是 n，此后同）是任意选取的两个质数 61（p） 和 53（q） 的乘积；&lt;/li&gt;
 &lt;li&gt;17（e） 是介于 1 和 (61-1)*(53-1)=3120 之间，并且和 3120 互质的一个随机数；&lt;/li&gt;
-&lt;li&gt;2753（d） 是 17 对于 3120 的模反元素&lt;sup&gt;1&lt;/sup&gt;；&lt;/li&gt;
+&lt;li&gt;2753（d） 是 17 对于 3120 的模反元素&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;；&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -69,7 +69,7 @@
 
 &lt;p&gt;在已知 {e, n} 的情况下，想要得到 d，唯一（不一定，但反正还没有证明）的办法就是通过 n 因式分解得到 p 和 q；RSA 算法的安全性就在于保证这两个数足够大，让没有计算机能够在允许的时间成本内计算出结果。上面的例子中 3233 写成二进制是 12 位，那它就是一个 12 位的密钥，现实的应用中，使用的主要是 1024 和 2048 位的密钥；&lt;/p&gt;
 
-&lt;p&gt;不过说起来，好像已经有&lt;a href=&quot;http://www.solidot.org/story?sid=46469&quot; target=&quot;_blank&quot;&gt;能用的量子计算机&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;了。不知道这次这台“万能解密机”会不会被人炸掉&lt;sup&gt;3&lt;/sup&gt;。&lt;/p&gt;
+&lt;p&gt;不过说起来，好像已经有&lt;a href=&quot;http://www.solidot.org/story?sid=46469&quot; target=&quot;_blank&quot;&gt;能用的量子计算机&lt;/a&gt;&lt;sup id=&quot;fnref:2&quot;&gt;&lt;a href=&quot;#fn:2&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;了。不知道这次这台“万能解密机”会不会被人炸掉&lt;sup id=&quot;fnref:3&quot;&gt;&lt;a href=&quot;#fn:3&quot; rel=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt;。&lt;/p&gt;
 
 &lt;h2&gt;公钥解密实现&lt;/h2&gt;
 
@@ -89,7 +89,7 @@ return Encoding.UTF8.GetString(resultBytes);
 
 &lt;p&gt;执行以上代码将无法得到正确结果，是因为 BigInteger 在使用字节数组初始化的时候，要求参数使用小&lt;a href=&quot;https://zh.wikipedia.org/zh/%E5%AD%97%E8%8A%82%E5%BA%8F&quot; target=&quot;_blank&quot;&gt;字节序&lt;/a&gt;，应当进行如下修改：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;var modulus = BigInteger.Parse(modulusString);
+&lt;pre&gt;&lt;code class=&quot;csharp&quot;&gt;var modulus = BigInteger.Parse(modulusString);
 var exponent = BigInteger.Parse(exponentString);
 
 var encryptBytes = Convert.FromBase64String(text);
@@ -129,7 +129,7 @@ return Encoding.UTF8.GetString(resultBytes, index, resultBytes.Length - index); 
 
 &lt;p&gt;相信不少人的类库里都有一个 &lt;code&gt;RsaFromPkcs8&lt;/code&gt; 的类，反正我身为一个代码的搬运工，最早是在支付宝给商户的示例代码里看到的，其中有一个 &lt;code&gt;ConvertFromPublikcKey&lt;/code&gt; 方法，用于将一串 RSA 公钥字符串解析成 &lt;code&gt;RSAParameters&lt;/code&gt;，里面有几个&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E9%AD%94%E8%A1%93%E6%95%B8%E5%AD%97&quot; target=&quot;_blank&quot;&gt;魔法数字&lt;/a&gt;：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;private static RSAParameters ConvertFromPublicKey(string pemFileConent)
+&lt;pre&gt;&lt;code class=&quot;csharp&quot;&gt;private static RSAParameters ConvertFromPublicKey(string pemFileConent)
 {
     byte[] keyData = Convert.FromBase64String(pemFileConent);
     if (keyData.Length &amp;lt; 162)
@@ -153,7 +153,7 @@ return Encoding.UTF8.GetString(resultBytes, index, resultBytes.Length - index); 
 
 &lt;p&gt;PKCS#1 中规定了 RSA 的公私钥格式，在 PKCS#8 中，规定了 Apache 读取证书私钥的标准。公钥使用 &lt;a href=&quot;https://zh.wikipedia.org/zh-cn/ASN.1&quot; target=&quot;_blank&quot;&gt;ASN.1&lt;/a&gt; 编码，感谢&lt;a href=&quot;http://boytnt.blog.51cto.com/966121/1351089&quot; target=&quot;_blank&quot;&gt;兔子窝：C#与Java的RSA（2）&lt;/a&gt;这篇文章（咦，为什么又是2…），照着他完成了 512 和 2048 位密钥的硬编码：找到&lt;code&gt;03（BIT STRING）&lt;/code&gt;后的&lt;code&gt;30（SEQUENCE）&lt;/code&gt;后的&lt;code&gt;02（INTEGER）&lt;/code&gt;，再读取 INTEGER 节指定的字节长度（注意区分长形式和短形式），跳过开头的&lt;code&gt;00&lt;/code&gt;后面的数据就是公钥的 modulus，而 publicExponent 是同理下一个整数；于是，我们就得到了……更多魔法数字！&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;private static RSAParameters ConvertPublicKey(string pemPublicKey)
+&lt;pre&gt;&lt;code class=&quot;csharp&quot;&gt;private static RSAParameters ConvertPublicKey(string pemPublicKey)
 {
     byte[] keyBytes = Convert.FromBase64String(pemPublicKey);
     byte[] modulus;
@@ -183,7 +183,7 @@ return Encoding.UTF8.GetString(resultBytes, index, resultBytes.Length - index); 
 
 &lt;p&gt;好消息是这段代码写完，就可以抛弃上一节的 &lt;code&gt;modulusString&lt;/code&gt; 和 &lt;code&gt;exponentString&lt;/code&gt; 了；以及我终于知道密钥的真实长度是什么了，因此密文过长的问题也一并解决了：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;/// &amp;lt;summary&amp;gt;
+&lt;pre&gt;&lt;code class=&quot;csharp&quot;&gt;/// &amp;lt;summary&amp;gt;
 /// RSA 公钥解密
 /// &amp;lt;/summary&amp;gt;
 /// &amp;lt;param name=&quot;text&quot;&amp;gt;密文&amp;lt;/param&amp;gt;
@@ -213,7 +213,7 @@ public static string Decrypt(string text, RSAParameters publicKey)
     while (i &amp;lt; encryptBytes.Length)
     {
         // 密文长度必须小于密钥长度
-        var temp = new byte[Math.Min(encryptBytes.Length, publicKey.Modulus.Length)];
+        var temp = new byte[Math.Min(encryptBytes.Length-i, publicKey.Modulus.Length)];
         Array.Copy(encryptBytes, i, temp, 0, temp.Length);
         // 分段解密并连接
         result += Decrypt(temp, exponent, modulus);
@@ -262,10 +262,18 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;以上是 C# 公钥解密 RSA 的完整算法实现。谢谢大家，Fuck 微软。&lt;/p&gt;
+&lt;div class=&quot;footnotes&quot;&gt;
+&lt;hr/&gt;
+&lt;ol&gt;
+&lt;li id=&quot;fn:1&quot;&gt;
+&lt;p&gt;已知 a 和 c 互质，如果 a*b%c=1，那 b 就是 a 对于 c 的模反元素。&lt;a href=&quot;#fnref:1&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li id=&quot;fn:2&quot;&gt;
+&lt;p&gt;量子算法利用量子的叠加态同时进行更多的运算&lt;strike&gt;，可以制造平行世界（出自&lt;a href=&quot;http://book.douban.com/subject/3417499/&quot; target=&quot;_blank&quot;&gt;《原始人类》&lt;/a&gt;）&lt;/strike&gt;。&lt;a href=&quot;#fnref:2&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li id=&quot;fn:3&quot;&gt;
+&lt;p&gt;出自&lt;a href=&quot;http://book.douban.com/subject/1057206/&quot; target=&quot;_blank&quot;&gt;《数字城堡》&lt;/a&gt;，在书中 NSA 利用这台计算机能够破解任何密码。&lt;a href=&quot;#fnref:3&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
 
-&lt;p&gt;[^1]：已知 a 和 c 互质，如果 a*b%c=1，那 b 就是 a 对于 c 的模反元素。&lt;br /&gt;
-[^2]：量子算法利用量子的叠加态同时进行更多的运算&lt;strike&gt;，可以制造平行世界（出自&lt;a href=&quot;http://book.douban.com/subject/3417499/&quot; target=&quot;_blank&quot;&gt;《原始人类》&lt;/a&gt;）&lt;/strike&gt;。&lt;br /&gt;
-[^3]：出自&lt;a href=&quot;http://book.douban.com/subject/1057206/&quot; target=&quot;_blank&quot;&gt;《数字城堡》&lt;/a&gt;，在书中 NSA 利用这台计算机能够破解任何密码。&lt;/p&gt;
 </description>
         <pubDate>Fri, 11 Dec 2015 00:00:00 +0800</pubDate>
         <link>http://blog.joyjy.im/2015/12/11/rsa-decryption-with-public-key.html</link>
@@ -468,14 +476,15 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 
 &lt;p&gt;VS 以解决方案为单位组织源码，解决方案文件夹映射到文件系统文件夹。解决方案下有多个项目，可以位于不同的文件系统文件夹。项目可以引用解决方案内的其他项目或任意文件位置的 .dll 文件，引用会被声明在 .csproj 文件中：&lt;/p&gt;
 
-&lt;p&gt;&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;ProjectReference&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Include=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;..\ProjectFolder\Project.csproj&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;Project&amp;gt;&lt;/span&gt;{e737ac4a-1ea8-4fae-8b7b-05b908608f2d}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Project&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;Name&amp;gt;&lt;/span&gt;ProjectName&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Name&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ProjectReference&amp;gt;&lt;/span&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;xml&quot;&gt;&amp;lt;ProjectReference Include=&quot;..\ProjectFolder\Project.csproj&quot;&amp;gt;
+    &amp;lt;Project&amp;gt;{e737ac4a-1ea8-4fae-8b7b-05b908608f2d}&amp;lt;/Project&amp;gt;
+    &amp;lt;Name&amp;gt;ProjectName&amp;lt;/Name&amp;gt;
+&amp;lt;/ProjectReference&amp;gt;
 
-&lt;p&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;Reference&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Include=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;DllName&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;HintPath&amp;gt;&lt;/span&gt;..\Lib\Dll.dll&lt;span class=&quot;nt&quot;&gt;&amp;lt;/HintPath&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Reference&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;&lt;/p&gt;
+&amp;lt;Reference Include=&quot;DllName&quot;&amp;gt;
+    &amp;lt;HintPath&amp;gt;..\Lib\Dll.dll&amp;lt;/HintPath&amp;gt;
+&amp;lt;/Reference&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Nuget 使用项目下的 packages.config 管理 dll 引用，当添加 Nuget 包时会进行以下操作：
     1. 下载 .dll 文件到解决方案映射的文件系统文件夹中的 \packages 目录下；

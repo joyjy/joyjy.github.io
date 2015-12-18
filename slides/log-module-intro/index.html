@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>LogModule 简介</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+      # 日志系统
+
+收集各项运行日志，方便诊断系统运行状况。
+
+---
+
+## 系统角色
+
+SDK -> Collector -> Broker(Redis) -> Diverter(DB) -> OA
+
+![title](http://7xoswg.com1.z0.glb.clouddn.com/log-slide/log-summry.png)
+
+---
+
+### 数据流向
+
+1. SDK 生成日志文件到 E:\\WebSystemLog\\LogModule\\；
+2. Collector 建立 socket 连接到 Broker，读取上一文件夹中的文件并发送；
+3. Broker 接收日志信息，合并存储到 Redis；
+4. Diverter 从 Redis 中取出日志信息，批量存储到数据库以及进行其他后续统计；
+5. OA 提供查询数据库等其他管理功能；
+
+---
+
+## 系统集群介绍
+
+目前集群包含以下服务器/DB，Collector 到不同 Broker 的指向靠配置实现：
+
+![title](http://7xoswg.com1.z0.glb.clouddn.com/log-slide/log-servers.png)
+
+ - 10.15.14.12（实体机）：Diverter、Broker×4；
+ - 10.15.14.8（虚拟机） ：Diverter；
+ - 10.15.14.10（虚拟机）：Broker；
+ - 10.15.14.11（虚拟机）：Broker；
+ - 10.15.17.105        ：Redis；
+ - 10.15.17.106        ：Redis；
+ - GyyxDevelopmentLogDB：日志原始数据；
+ - GyyxLogConfDB       ：日志管理/统计数据；
+
+---
+
+### collector 管理
+
+collector 为 Windows 服务，主要使用的配置文件项包含以下内容：
+
+```xml
+<configSections>
+  <section type="Gyyx.Module.LogV2.Common.Configs.LogModuleConfig, Gyyx.Module.LogV2.Common" name="logModule"/>
+</configSections>
+<\!--允许的日志等级，包含None，Debug，Info，Warn，Error，Fatal，ExceptDebug，All-->
+<logModule logLevel="All">
+  <\!--准备读取发送的文件位置和扩展名，读取失败的文件会被重命名为 .fal，如果出现需要处理；-->
+  <fileConfig tempDir="E:\WebSystemLog\LogModule\" extName=".txt"/>
+  <\!--要连接的 broker 的主机名及端口号-->
+  <netConfig host="broker.log.gyyx.cn" port="9200"/>
+</logModule>
+```
+
+---
+
+### broker 管理
+
+broker 使用 standalone 运行。每个进程监听两个端口，3.3 版以前为数据端口 9200 和命令端口 9210；3.4 版起开始支持启动配置，默认数据端口为 9200，命令端口为 9201；
+
+命令端口目前支持的命令有：
+
+ - `redis`：使用的 Redis 端口，各域名日志数据在 Redis 中的队列长度；
+ - `status`：系统的当前计数和保持的连接；
+   ![title](http://7xoswg.com1.z0.glb.clouddn.com/log-slide/log-status.png)
+ - `bye`：断开连接；
+
+---
+
+### diverter 管理
+
+diverter 运行在 tomcat 中，首页提供当前系统运计数，各域名上次获取到数据的时间、内存及 Redis 队列长度；`/throughput?backMinutes=10`提供系统吞吐量数据；
+
+> http://10.15.14.8:8006/
+> http://10.15.14.12:8006/
+
+---
+
+### 数据结构说明
+
+GyyxDevelopmentLogDB 中的表按照日志等级-域名-日期分表；
+对于用户的每一次请求，将会有一个唯一ID，本次请求中生成的日志均会使用该ID记录；
+
+![](http://7xoswg.com1.z0.glb.clouddn.com/log-slide/log-level.png)
+![](http://7xoswg.com1.z0.glb.clouddn.com/log-slide/log-id.png)
+
+对于 `qqErQb-6a17dc2403301-097-rIfIjm-3d21e` 这个ID：其中第一段为域名的 Hash，可在 [GyyxLogConfDB]..[domain_tb] 中找到
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>

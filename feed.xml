@@ -5,9 +5,151 @@
     <description></description>
     <link>http://blog.joyjy.im/</link>
     <atom:link href="http://blog.joyjy.im/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 18 Dec 2015 23:40:27 +0800</pubDate>
-    <lastBuildDate>Fri, 18 Dec 2015 23:40:27 +0800</lastBuildDate>
+    <pubDate>Thu, 25 Feb 2016 19:11:25 +0800</pubDate>
+    <lastBuildDate>Thu, 25 Feb 2016 19:11:25 +0800</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>Markdown Everywhere</title>
+        <description>&lt;p&gt;Markdown 是一种&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%A0%87%E8%AE%B0%E8%AF%AD%E8%A8%80&quot;&gt;轻量级标记语言&lt;/a&gt;，它吸收了很多（外国）人们在纯文本电子邮件中常用的标记，跟其他流行的标记语言（MediaWiki 等）比较起来更加容易阅读和学习，同时也支持内嵌 HTML 以实现更复杂的展示效果；&lt;/p&gt;
+
+&lt;p&gt;同时纯文本还具有以下好处：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;使作者关心内容/结构多于形式&lt;/li&gt;
+&lt;li&gt;跨平台&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;作为一个广受欢迎的标记语言，Markdown 能够非常容易地转换为重量级标记语言（HTML）。下面介绍几种在将来可能有用的工具：&lt;/p&gt;
+
+&lt;h2&gt;可以用 Markdown 做到的&lt;/h2&gt;
+
+&lt;h3&gt;博客：Jekyll（&lt;a href=&quot;http://jekyllcn.com/&quot;&gt;中文官网&lt;/a&gt;）&lt;/h3&gt;
+
+&lt;p&gt;Jekyll 是一个静态网站生成程序。它使用 Ruby 编写，使用 &lt;code&gt;gem install jekyll&lt;/code&gt; 后即可使用：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;jekyll new my-awesome-blog
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;my-awesome-blog
+jekyll serve
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在本地 4000 端口运行你的博客站点。&lt;/p&gt;
+
+&lt;p&gt;Jekyll 的博文使用 &lt;code&gt;yyyy-MM-dd-what-ever-post-name.md&lt;/code&gt; 形式的文件名存储在 _post 文件夹下，使用 YAML 在文件头设置博文属性，其他请参见官方文档。&lt;/p&gt;
+
+&lt;h3&gt;API 文档：Slate（&lt;a href=&quot;https://github.com/tripit/slate&quot;&gt;GitHub&lt;/a&gt;）&lt;/h3&gt;
+
+&lt;p&gt;Slate 同样生成静态网站，也使用 Ruby 编写，但它并没有发布到 gem，只能从源码运行。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;git clone&lt;/code&gt; Slate 项目到本地后，运行：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;bundle install
+bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;middleman server
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;就可以把 Slate 生成的静态网站运行在本地的 4567 端口上。&lt;/p&gt;
+
+&lt;p&gt;如何书写请参见项目的代码示例。另外随意更新 Slate 到 github 的开发版本可能会导致样式变形。&lt;/p&gt;
+
+&lt;h3&gt;Wiki：Gollum（&lt;a href=&quot;https://github.com/gollum/gollum&quot;&gt;GitHub&lt;/a&gt;）&lt;/h3&gt;
+
+&lt;p&gt;GitHub 和 GitLab 的内置 Wiki 均使用 Gollum，你猜对了它还是用 Ruby 编写的，支持多种标记语言，但从 GitLab Web 界面只能创建 Markdown 形式的文件。&lt;/p&gt;
+
+&lt;p&gt;如果要使用 MediaWiki 语言，使用 &lt;code&gt;git clone&lt;/code&gt; Wiki 仓库新建文件，并将扩展名命名为 .wiki 即可。&lt;/p&gt;
+
+&lt;p&gt;Gollum 的一点好处是可以看到“所有页面”，减轻了一点页面组织的工作。&lt;/p&gt;
+
+&lt;h3&gt;Slide：RemarkJS（&lt;a href=&quot;http://remarkjs.com/&quot;&gt;用 RemarkJS 展示 RemarkJS 语法&lt;/a&gt;）&lt;/h3&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Slide 就是 PPT，不过只有 PowerPoint 做出来的 PPT 才能叫 PPT……&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;终于，这次不是 Ruby，让我们欢迎 JavaScript！（不要理我）&lt;/p&gt;
+
+&lt;p&gt;看了网页源码就会发现，RemarkJS 只需要一个 textarea 输出 Markdown 文本……因此我们可以对 Jekyll 稍作更改支持 Slide：&lt;/p&gt;
+
+&lt;h4&gt;RemarkSlideConverter.rb 放在 _plugins 文件夹下&lt;/h4&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;module&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;Jekyll&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RemarkSlideConverter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Converter&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;safe&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;true&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;priority&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:low&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;matches&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;ext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=~&lt;/span&gt; &lt;span class=&quot;sr&quot;&gt;/^\.remark$/i&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;output_ext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;s2&quot;&gt;&quot;.html&quot;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;convert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;content&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h4&gt;slide.html 放在 _layouts 文件夹下&lt;/h4&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;!DOCTYPE html&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;html&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;title&amp;gt;&lt;/span&gt;Markdown Everywhere&lt;span class=&quot;nt&quot;&gt;&amp;lt;/title&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;meta&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;charset=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;utf-8&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;style&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;@import&lt;/span&gt; &lt;span class=&quot;sx&quot;&gt;url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;@import&lt;/span&gt; &lt;span class=&quot;sx&quot;&gt;url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;@import&lt;/span&gt; &lt;span class=&quot;sx&quot;&gt;url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+      &lt;span class=&quot;nt&quot;&gt;body&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;font-family&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&#39;Droid Serif&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;h1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;h2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;h3&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nl&quot;&gt;font-family&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&#39;Yanone Kaffeesatz&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;nl&quot;&gt;font-weight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;normal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;nc&quot;&gt;.remark-code&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;.remark-inline-code&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;font-family&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&#39;Ubuntu Mono&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/style&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;body&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;textarea&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;source&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/textarea&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;script &lt;/span&gt;&lt;span class=&quot;na&quot;&gt;src=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;https://gnab.github.io/remark/downloads/remark-latest.min.js&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/script&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;script&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;kd&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;slideshow&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;remark&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/script&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;最后 Markdown 文件使用 .remark 结尾，YAML 头属性里使用 &lt;code&gt;layout: slide&lt;/code&gt; 即可。&lt;/p&gt;
+
+&lt;h2&gt;Markdown 添加图片是永远的痛，但我们还有 JS&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;“为何这么执着于纯文本？”&lt;/p&gt;
+
+&lt;p&gt;“因为又穷又懒（诚实脸）。”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;如何在 GitHub 上查找可视化 JS 组件：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;找到你想要的图的英文名；&lt;/li&gt;
+&lt;li&gt;在 GitHub 上搜索；&lt;/li&gt;
+&lt;li&gt;选择语言为 JavaScript；&lt;/li&gt;
+&lt;li&gt;哪个顺眼用哪个；&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;当然还是要看一眼对方使用的协议。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;时序图：&lt;a href=&quot;http://bramp.github.io/js-sequence-diagrams/&quot;&gt;http://bramp.github.io/js-sequence-diagrams/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;流程图：&lt;a href=&quot;http://flowchart.js.org/&quot;&gt;http://flowchart.js.org/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;韦恩图：&lt;a href=&quot;https://github.com/benfred/venn.js&quot;&gt;https://github.com/benfred/venn.js&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;随便什么图：&lt;a href=&quot;https://github.com/mdaines/viz.js&quot;&gt;https://github.com/mdaines/viz.js&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Tue, 16 Feb 2016 00:00:00 +0800</pubDate>
+        <link>http://blog.joyjy.im/2016/02/16/markdown-everywhere.html</link>
+        <guid isPermaLink="true">http://blog.joyjy.im/2016/02/16/markdown-everywhere.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>RSA 算法学习笔记及 C# 公钥解密实现</title>
@@ -15,9 +157,9 @@
 
 &lt;p&gt;然而 .Net 并不提供 RSA 公钥解密算法实现，在 &lt;a href=&quot;https://msdn.microsoft.com/zh-cn/library/system.security.cryptography.rsacryptoserviceprovider\(v=vs.100\).aspx&quot; target=&quot;_blank&quot;&gt;MSDN&lt;/a&gt; 里明确指出&lt;code&gt;Encrypt&lt;/code&gt;只能用公钥，&lt;code&gt;Decrypt&lt;/code&gt;用私钥，&lt;code&gt;SignData&lt;/code&gt;也用私钥，那么&lt;code&gt;VerifyData&lt;/code&gt;或者&lt;code&gt;VerifyHash&lt;/code&gt;自然就只能用公钥；最后，实例化密钥用的&lt;a href=&quot;https://msdn.microsoft.com/zh-cn/library/system.security.cryptography.rsaparameters(v=vs.100).aspx&quot; target=&quot;_blank&quot;&gt;&lt;code&gt;RSAParameters&lt;/code&gt;&lt;/a&gt;结构要么从 XML 导入，要么手动给以下属性赋值（顺便提一句，这些属性全都是二进制数组）：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/rsa_parameters_please_saying_english.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/rsa_parameters_please_saying_english.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/are_you_fucking_kidding_me.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/are_you_fucking_kidding_me.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
 
 &lt;p&gt;当时花了挺长时间学习实现了一段公钥解密代码，今天友商提供了之前不支持的 2048 位密钥，在数二进制的时候发现自己忘得差不多了，于是就整理一下写下来。&lt;/p&gt;
 
@@ -26,19 +168,15 @@
 &lt;p&gt;这一节的内容主要来源于 &lt;a href=&quot;http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html&quot; target=&quot;_blank&quot;&gt;阮一峰：RSA算法原理（二）&lt;/a&gt;。&lt;/p&gt;
 
 &lt;p&gt;请尝试计算下面两个式子：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;(65^17)%3233 // 65 的 17 次方对 3233 求余
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;(65^17)%3233 // 65 的 17 次方对 3233 求余
 (2790^2753)%3233 // 2790 的 2753 次方对 3233 求余
-&lt;/code&gt;&lt;/pre&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;一般的计算器比较困难，不过我们有天生支持大整数的 python：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;python&quot;&gt;&amp;gt;&amp;gt;&amp;gt; divmod(pow(65,17),3233)
-(2041368261935227977399887995L, 2790L)
-&amp;gt;&amp;gt;&amp;gt; divmod(pow(2790,2753),3233)
-(1732&amp;lt;此处省略9475位数字&amp;gt;1695L, 65L)
-&lt;/code&gt;&lt;/pre&gt;
-
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;divmod&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;pow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;65&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;17&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3233&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;il&quot;&gt;2041368261935227977399887995L&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;il&quot;&gt;2790L&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;divmod&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;pow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2790&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2753&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3233&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1732&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;此处省略&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9475&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;位数字&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;il&quot;&gt;1695L&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;il&quot;&gt;65L&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;一开始的 65 经过了和 17、3233 的运算，得到余数 2790；然后 2790 和 2753 以及又一个 3233 的运算，又回到了 65。这就是 RSA 的原理。&lt;/p&gt;
 
 &lt;p&gt;不要急着动粗。你猜的对，这个论述省略了很多东西。&lt;/p&gt;
@@ -50,9 +188,8 @@
 &lt;ol&gt;
 &lt;li&gt;3233（算法中符号是 n，此后同）是任意选取的两个质数 61（p） 和 53（q） 的乘积；&lt;/li&gt;
 &lt;li&gt;17（e） 是介于 1 和 (61-1)*(53-1)=3120 之间，并且和 3120 互质的一个随机数；&lt;/li&gt;
-&lt;li&gt;2753（d） 是 17 对于 3120 的模反元素&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;；&lt;/li&gt;
+&lt;li&gt;2753（d） 是 17 对于 3120 的模反元素&lt;sup id=&quot;fnref1&quot;&gt;&lt;a href=&quot;#fn1&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;；&lt;/li&gt;
 &lt;/ol&gt;
-
 
 &lt;p&gt;在 RSA 算法 PKCS#1 的定义中：&lt;/p&gt;
 
@@ -62,218 +199,213 @@
 &lt;li&gt;2753（d） 叫做 privateExponent，私钥指数；&lt;/li&gt;
 &lt;/ul&gt;
 
-
 &lt;p&gt;那么所谓的公钥，就是 {e, n} 这一对整数，而私钥则是 {d, n}。&lt;/p&gt;
 
 &lt;h3&gt;因式分解是很困难的&lt;/h3&gt;
 
 &lt;p&gt;在已知 {e, n} 的情况下，想要得到 d，唯一（不一定，但反正还没有证明）的办法就是通过 n 因式分解得到 p 和 q；RSA 算法的安全性就在于保证这两个数足够大，让没有计算机能够在允许的时间成本内计算出结果。上面的例子中 3233 写成二进制是 12 位，那它就是一个 12 位的密钥，现实的应用中，使用的主要是 1024 和 2048 位的密钥；&lt;/p&gt;
 
-&lt;p&gt;不过说起来，好像已经有&lt;a href=&quot;http://www.solidot.org/story?sid=46469&quot; target=&quot;_blank&quot;&gt;能用的量子计算机&lt;/a&gt;&lt;sup id=&quot;fnref:2&quot;&gt;&lt;a href=&quot;#fn:2&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;了。不知道这次这台“万能解密机”会不会被人炸掉&lt;sup id=&quot;fnref:3&quot;&gt;&lt;a href=&quot;#fn:3&quot; rel=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt;。&lt;/p&gt;
+&lt;p&gt;不过说起来，好像已经有&lt;a href=&quot;http://www.solidot.org/story?sid=46469&quot; target=&quot;_blank&quot;&gt;能用的量子计算机&lt;/a&gt;&lt;sup id=&quot;fnref2&quot;&gt;&lt;a href=&quot;#fn2&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;了。不知道这次这台“万能解密机”会不会被人炸掉&lt;sup id=&quot;fnref3&quot;&gt;&lt;a href=&quot;#fn3&quot; rel=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt;。&lt;/p&gt;
 
 &lt;h2&gt;公钥解密实现&lt;/h2&gt;
 
 &lt;p&gt;有了上面的原理，再加上 .Net Frameworks 4.0 里已经提供了&lt;a href=&quot;https://msdn.microsoft.com/zh-cn/library/system.numerics.BigInteger(v=vs.100).aspx&quot; target=&quot;_blank&quot;&gt;&lt;code&gt;BigInteger&lt;/code&gt;&lt;/a&gt;类，看起来这个问题没有一开始那么吓人了，撸起袖子上吧：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Parse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;modulusString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exponent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Parse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exponentString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-&lt;pre&gt;&lt;code class=&quot;csharp&quot;&gt;var modulus = BigInteger.Parse(modulusString);
-var exponent = BigInteger.Parse(exponentString);
+&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Convert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;FromBase64String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encryptText&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;BigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-var encryptBytes = Convert.FromBase64String(encryptText);
-var value = new BigInteger(encryptBytes);
+&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ModPow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exponent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resultBytes&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ToByteArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
 
-var result = BigInteger.ModPow(value, exponent, modulus);
-var resultBytes = result.ToByteArray();
-
-return Encoding.UTF8.GetString(resultBytes);
-&lt;/code&gt;&lt;/pre&gt;
-
+&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Encoding&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UTF8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;GetString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resultBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;执行以上代码将无法得到正确结果，是因为 BigInteger 在使用字节数组初始化的时候，要求参数使用小&lt;a href=&quot;https://zh.wikipedia.org/zh/%E5%AD%97%E8%8A%82%E5%BA%8F&quot; target=&quot;_blank&quot;&gt;字节序&lt;/a&gt;，应当进行如下修改：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Parse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;modulusString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exponent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Parse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exponentString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-&lt;pre&gt;&lt;code class=&quot;csharp&quot;&gt;var modulus = BigInteger.Parse(modulusString);
-var exponent = BigInteger.Parse(exponentString);
+&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Convert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;FromBase64String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Reverse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 需要调整字节序，BigIntenger 需要 little-endian
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0x80&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 如果最后一个字节第一位为1，追加一个 00 避免生成负数
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;BigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-var encryptBytes = Convert.FromBase64String(text);
-Array.Reverse(encryptBytes); // 需要调整字节序，BigIntenger 需要 little-endian
-if ((encryptBytes[encryptBytes.Length - 1] &amp;amp; 0x80) &amp;gt; 0) // 如果最后一个字节第一位为1，追加一个 00 避免生成负数
-{
-    var temp = new byte[encryptBytes.Length];
-    Array.Copy(encryptBytes, temp, encryptBytes.Length);
-    encryptBytes = new byte[temp.Length + 1];
-    Array.Copy(temp, encryptBytes, temp.Length);
-}
-var value = new BigInteger(encryptBytes);
-
-var result = BigInteger.ModPow(value, exponent, modulus);
-var resultBytes = result.ToByteArray();
-Array.Reverse(resultBytes); // 调整顺序
-
-int index = Array.FindIndex(resultBytes, b =&amp;gt; b == 0) + 1;
-return Encoding.UTF8.GetString(resultBytes, index, resultBytes.Length - index); // 排除掉旋转后多余的0
-&lt;/code&gt;&lt;/pre&gt;
-
+&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ModPow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exponent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resultBytes&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ToByteArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Reverse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resultBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 调整顺序
+&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;FindIndex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resultBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Encoding&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UTF8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;GetString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resultBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resultBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 排除掉旋转后多余的0
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;这段代码勉强达到了可用标准，但还有一些缺陷：&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;&lt;p&gt;&lt;code&gt;modulusString&lt;/code&gt; 和 &lt;code&gt;exponentString&lt;/code&gt; 是从哪块石头里蹦出来的？&lt;/p&gt;
-
-&lt;p&gt;答：用 Java 打印的；&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;密文太长和太短的情况下都有乱码，为什么？&lt;/p&gt;
-
-&lt;p&gt;答：跟密钥长度相关，具体还不知道；&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;modulusString&lt;/code&gt; 和 &lt;code&gt;exponentString&lt;/code&gt; 是从哪块石头里蹦出来的？&lt;/li&gt;
 &lt;/ol&gt;
 
+&lt;p&gt;答：用 Java 打印的；
+2. 密文太长和太短的情况下都有乱码，为什么？&lt;/p&gt;
+
+&lt;p&gt;答：跟密钥长度相关，具体还不知道；&lt;/p&gt;
 
 &lt;p&gt;由于最迫切的功能实现了，这两个问题也就一直拖了很久。&lt;/p&gt;
 
 &lt;h3&gt;公钥内容解析&lt;/h3&gt;
 
 &lt;p&gt;相信不少人的类库里都有一个 &lt;code&gt;RsaFromPkcs8&lt;/code&gt; 的类，反正我身为一个代码的搬运工，最早是在支付宝给商户的示例代码里看到的，其中有一个 &lt;code&gt;ConvertFromPublikcKey&lt;/code&gt; 方法，用于将一串 RSA 公钥字符串解析成 &lt;code&gt;RSAParameters&lt;/code&gt;，里面有几个&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E9%AD%94%E8%A1%93%E6%95%B8%E5%AD%97&quot; target=&quot;_blank&quot;&gt;魔法数字&lt;/a&gt;：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;csharp&quot;&gt;private static RSAParameters ConvertFromPublicKey(string pemFileConent)
-{
-    byte[] keyData = Convert.FromBase64String(pemFileConent);
-    if (keyData.Length &amp;lt; 162)
-    {
-        throw new ArgumentException(&quot;pem file content is incorrect.&quot;);
-    }
-    byte[] pemModulus = new byte[128];
-    byte[] pemPublicExponent = new byte[3];
-    Array.Copy(keyData, 29, pemModulus, 0, 128);
-    Array.Copy(keyData, 159, pemPublicExponent, 0, 3);
-    RSAParameters para = new RSAParameters();
-    para.Modulus = pemModulus;
-    para.Exponent = pemPublicExponent;
-    return para;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RSAParameters&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ConvertFromPublicKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pemFileConent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keyData&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Convert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;FromBase64String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pemFileConent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keyData&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;162&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ArgumentException&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;pem file content is incorrect.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pemModulus&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;128&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pemPublicExponent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keyData&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;29&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pemModulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;128&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keyData&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;159&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pemPublicExponent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;RSAParameters&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;para&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;RSAParameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;para&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Modulus&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pemModulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;para&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Exponent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pemPublicExponent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;para&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;有了上面的基础知识，我们已经知道了公钥里有两个整数，分别是 modulus 和 publicExponent，这段代码赋值给 Modulus 属性是个长度 128 的字节数组，那就是说这段代码针对的是 128*8=1024 位的密钥。道理我都懂，可魔法数字到底是哪来的？&lt;/p&gt;
 
 &lt;p&gt;本来我是不需要知道答案的。但随着友商的增多，出现了 512 位的密钥，这个方法理所应当地报错了，因此必须修改代码支持 512 和 2048 位的公钥。&lt;/p&gt;
 
 &lt;p&gt;PKCS#1 中规定了 RSA 的公私钥格式，在 PKCS#8 中，规定了 Apache 读取证书私钥的标准。公钥使用 &lt;a href=&quot;https://zh.wikipedia.org/zh-cn/ASN.1&quot; target=&quot;_blank&quot;&gt;ASN.1&lt;/a&gt; 编码，感谢&lt;a href=&quot;http://boytnt.blog.51cto.com/966121/1351089&quot; target=&quot;_blank&quot;&gt;兔子窝：C#与Java的RSA（2）&lt;/a&gt;这篇文章（咦，为什么又是2…），照着他完成了 512 和 2048 位密钥的硬编码：找到&lt;code&gt;03（BIT STRING）&lt;/code&gt;后的&lt;code&gt;30（SEQUENCE）&lt;/code&gt;后的&lt;code&gt;02（INTEGER）&lt;/code&gt;，再读取 INTEGER 节指定的字节长度（注意区分长形式和短形式），跳过开头的&lt;code&gt;00&lt;/code&gt;后面的数据就是公钥的 modulus，而 publicExponent 是同理下一个整数；于是，我们就得到了……更多魔法数字！&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;csharp&quot;&gt;private static RSAParameters ConvertPublicKey(string pemPublicKey)
-{
-    byte[] keyBytes = Convert.FromBase64String(pemPublicKey);
-    byte[] modulus;
-    switch (keyBytes.Length)
-    {
-        case 94: // 64×8=512位密钥固定长度
-            modulus = new byte[64];
-            Array.Copy(keyBytes, 25, modulus, 0, modulus.Length);
-            break;
-        case 162: // 128×8=1024位密钥固定长度
-            modulus = new byte[128];
-            Array.Copy(keyBytes, 29, modulus, 0, modulus.Length);
-            break;
-        case 294: // 256×8=2048位密钥固定长度
-            modulus = new byte[256];
-            Array.Copy(keyBytes, 33, modulus, 0, modulus.Length);
-            break;
-        default:
-            throw new NotSupportedException(&quot;不支持的公钥长度&quot;);
-    }
-    byte[] publicExponent = new byte[3];
-    Array.Copy(keyBytes, keyBytes.Length - 3, publicExponent, 0, 3); // 都是 65537
-
-    return new RSAParameters { Modulus = modulus, Exponent = publicExponent };
-}
-&lt;/code&gt;&lt;/pre&gt;
-
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RSAParameters&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ConvertPublicKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pemPublicKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keyBytes&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Convert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;FromBase64String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pemPublicKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;switch&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keyBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;94&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 64×8=512位密钥固定长度
+&lt;/span&gt;            &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keyBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;25&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;162&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 128×8=1024位密钥固定长度
+&lt;/span&gt;            &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;128&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keyBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;29&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;294&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 256×8=2048位密钥固定长度
+&lt;/span&gt;            &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;256&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keyBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;33&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;NotSupportedException&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;不支持的公钥长度&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;publicExponent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keyBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keyBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;publicExponent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 都是 65537
+&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RSAParameters&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Modulus&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exponent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;publicExponent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;好消息是这段代码写完，就可以抛弃上一节的 &lt;code&gt;modulusString&lt;/code&gt; 和 &lt;code&gt;exponentString&lt;/code&gt; 了；以及我终于知道密钥的真实长度是什么了，因此密文过长的问题也一并解决了：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;csharp&quot;&gt;/// &amp;lt;summary&amp;gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;c1&quot;&gt;/// &amp;lt;summary&amp;gt;
 /// RSA 公钥解密
 /// &amp;lt;/summary&amp;gt;
 /// &amp;lt;param name=&quot;text&quot;&amp;gt;密文&amp;lt;/param&amp;gt;
 /// &amp;lt;param name=&quot;pemPublicKey&quot;&amp;gt;Base64编码公钥文本&amp;lt;/param&amp;gt;
 /// &amp;lt;returns&amp;gt;&amp;lt;/returns&amp;gt;
-public static string Decrypt(string text, string pemPublicKey)
-{
-    var publicKey = ConvertPublicKey(pemPublicKey);
-    return Decrypt(text, publicKey);
-}
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Decrypt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pemPublicKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;publicKey&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ConvertPublicKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pemPublicKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Decrypt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;publicKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 
-/// &amp;lt;summary&amp;gt;
+&lt;span class=&quot;c1&quot;&gt;/// &amp;lt;summary&amp;gt;
 /// RSA 公钥解密
 /// &amp;lt;/summary&amp;gt;
 /// &amp;lt;param name=&quot;text&quot;&amp;gt;密文&amp;lt;/param&amp;gt;
 /// &amp;lt;param name=&quot;publicKey&quot;&amp;gt;公钥&amp;lt;/param&amp;gt;
 /// &amp;lt;returns&amp;gt;解密后明文&amp;lt;/returns&amp;gt;
-public static string Decrypt(string text, RSAParameters publicKey)
-{
-    var encryptBytes = Convert.FromBase64String(text);
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Decrypt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RSAParameters&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;publicKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Convert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;FromBase64String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-    string result = string.Empty;
-    var modulus = ConvertBigInteger(publicKey.Modulus);
-    var exponent = ConvertBigInteger(publicKey.Exponent);
+    &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Empty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ConvertBigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;publicKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exponent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ConvertBigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;publicKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Exponent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-    int i = 0;
-    while (i &amp;lt; encryptBytes.Length)
-    {
-        // 密文长度必须小于密钥长度
-        var temp = new byte[Math.Min(encryptBytes.Length-i, publicKey.Modulus.Length)];
-        Array.Copy(encryptBytes, i, temp, 0, temp.Length);
-        // 分段解密并连接
-        result += Decrypt(temp, exponent, modulus);
-        i += temp.Length;
-    }
-    return result;
-}
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// 密文长度必须小于密钥长度
+&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Math&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Min&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;publicKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)];&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// 分段解密并连接
+&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Decrypt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exponent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 
-/// &amp;lt;summary&amp;gt;
+&lt;span class=&quot;c1&quot;&gt;/// &amp;lt;summary&amp;gt;
 /// RSA 解密
 /// &amp;lt;/summary&amp;gt;
 /// &amp;lt;param name=&quot;encryptBytes&quot;&amp;gt;&amp;lt;/param&amp;gt;
 /// &amp;lt;param name=&quot;exponent&quot;&amp;gt;&amp;lt;/param&amp;gt;
 /// &amp;lt;param name=&quot;modulus&quot;&amp;gt;&amp;lt;/param&amp;gt;
 /// &amp;lt;returns&amp;gt;&amp;lt;/returns&amp;gt;
-private static string Decrypt(byte[] encryptBytes, BigInteger exponent, BigInteger modulus)
-{
-    var value = ConvertBigInteger(encryptBytes);
-    // 密文 ^ publicExponent % modulus = 原文
-    var result = BigInteger.ModPow(value, exponent, modulus);
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Decrypt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BigInteger&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exponent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BigInteger&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ConvertBigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encryptBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// 密文 ^ publicExponent % modulus = 原文
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ModPow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exponent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modulus&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-    byte[] resultBytes = result.ToByteArray();
-    resultBytes = resultBytes.TakeWhile(b =&amp;gt; b != 0).ToArray(); // 排除掉尾部的空数据
-    Array.Reverse(resultBytes); // 调整字节序
+    &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resultBytes&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ToByteArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;resultBytes&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resultBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;TakeWhile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ToArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 排除掉尾部的空数据
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Reverse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resultBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 调整字节序
+&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Encoding&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UTF8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;GetString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resultBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 
-    return Encoding.UTF8.GetString(resultBytes);
-}
-
-/// &amp;lt;summary&amp;gt;
+&lt;span class=&quot;c1&quot;&gt;/// &amp;lt;summary&amp;gt;
 /// 字节数组转换为大整数
 /// &amp;lt;/summary&amp;gt;
 /// &amp;lt;param name=&quot;originBytes&quot;&amp;gt;&amp;lt;/param&amp;gt;
 /// &amp;lt;returns&amp;gt;&amp;lt;/returns&amp;gt;
-private static BigInteger ConvertBigInteger(byte[] originBytes)
-{
-    Array.Reverse(originBytes); // 需要调整字节序，BigIntenger 需要 little-endian
-    if ((originBytes[originBytes.Length - 1] &amp;amp; 0x80) &amp;gt; 0) // 如果最后一个字节第一位为1即负数，追加一个 00 避免错误
-    {
-        var temp = new byte[originBytes.Length];
-        Array.Copy(originBytes, temp, originBytes.Length);
-        originBytes = new byte[temp.Length + 1];
-        Array.Copy(temp, originBytes, temp.Length);
-    }
-    return new BigInteger(originBytes);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BigInteger&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ConvertBigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;originBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Reverse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;originBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 需要调整字节序，BigIntenger 需要 little-endian
+&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;originBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;originBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0x80&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 如果最后一个字节第一位为1即负数，追加一个 00 避免错误
+&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;originBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;originBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;originBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;originBytes&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;originBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;temp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;BigInteger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;originBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;以上是 C# 公钥解密 RSA 的完整算法实现。谢谢大家，Fuck 微软。&lt;/p&gt;
+
 &lt;div class=&quot;footnotes&quot;&gt;
-&lt;hr/&gt;
+&lt;hr&gt;
 &lt;ol&gt;
-&lt;li id=&quot;fn:1&quot;&gt;
-&lt;p&gt;已知 a 和 c 互质，如果 a*b%c=1，那 b 就是 a 对于 c 的模反元素。&lt;a href=&quot;#fnref:1&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
-&lt;li id=&quot;fn:2&quot;&gt;
-&lt;p&gt;量子算法利用量子的叠加态同时进行更多的运算&lt;strike&gt;，可以制造平行世界（出自&lt;a href=&quot;http://book.douban.com/subject/3417499/&quot; target=&quot;_blank&quot;&gt;《原始人类》&lt;/a&gt;）&lt;/strike&gt;。&lt;a href=&quot;#fnref:2&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
-&lt;li id=&quot;fn:3&quot;&gt;
-&lt;p&gt;出自&lt;a href=&quot;http://book.douban.com/subject/1057206/&quot; target=&quot;_blank&quot;&gt;《数字城堡》&lt;/a&gt;，在书中 NSA 利用这台计算机能够破解任何密码。&lt;a href=&quot;#fnref:3&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li id=&quot;fn1&quot;&gt;
+&lt;p&gt;已知 a 和 c 互质，如果 a*b%c=1，那 b 就是 a 对于 c 的模反元素。&amp;nbsp;&lt;a href=&quot;#fnref1&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li id=&quot;fn2&quot;&gt;
+&lt;p&gt;量子算法利用量子的叠加态同时进行更多的运算&lt;strike&gt;，可以制造平行世界（出自&lt;a href=&quot;http://book.douban.com/subject/3417499/&quot; target=&quot;_blank&quot;&gt;《原始人类》&lt;/a&gt;）&lt;/strike&gt;。&amp;nbsp;&lt;a href=&quot;#fnref2&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+
+&lt;li id=&quot;fn3&quot;&gt;
+&lt;p&gt;出自&lt;a href=&quot;http://book.douban.com/subject/1057206/&quot; target=&quot;_blank&quot;&gt;《数字城堡》&lt;/a&gt;，在书中 NSA 利用这台计算机能够破解任何密码。&amp;nbsp;&lt;a href=&quot;#fnref3&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+
 &lt;/ol&gt;
 &lt;/div&gt;
-
 </description>
         <pubDate>Fri, 11 Dec 2015 00:00:00 +0800</pubDate>
         <link>http://blog.joyjy.im/2015/12/11/rsa-decryption-with-public-key.html</link>
@@ -295,14 +427,12 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 &lt;li&gt;特点：数据大小、过期时间不一致；占用内存较小，生成及使用间隔时间较短；&lt;/li&gt;
 &lt;/ul&gt;
 
-
 &lt;p&gt;策略：&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;使用集中式缓存&lt;/li&gt;
 &lt;li&gt;过期时间较长且访问频率低的需要考虑独立存储防止被过期算法逐出；&lt;/li&gt;
 &lt;/ol&gt;
-
 
 &lt;h3&gt;缓存数据（DB Cache）&lt;/h3&gt;
 
@@ -312,7 +442,6 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 &lt;li&gt;与数据库存在一致性要求；&lt;/li&gt;
 &lt;li&gt;过期时间可能需要根据压力经常调整；&lt;/li&gt;
 &lt;/ul&gt;
-
 
 &lt;p&gt;策略：&lt;/p&gt;
 
@@ -325,11 +454,9 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 &lt;li&gt;抖动：避免同时过期；&lt;/li&gt;
 &lt;li&gt;争先：读写锁模式，发现数据过期，其他线程阻塞直到更新；&lt;/li&gt;
 &lt;li&gt;延时：在数据过期前更新；&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
+&lt;/ol&gt;&lt;/li&gt;
 &lt;li&gt;一致性数据库为准，如有改变应当使缓存过期或更新；&lt;/li&gt;
 &lt;/ol&gt;
-
 
 &lt;h3&gt;热数据（Hot Cache）&lt;/h3&gt;
 
@@ -340,7 +467,6 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 &lt;li&gt;需要在负载均衡服务器间共享状态；&lt;/li&gt;
 &lt;/ul&gt;
 
-
 &lt;p&gt;策略：&lt;/p&gt;
 
 &lt;ol&gt;
@@ -349,7 +475,6 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 &lt;li&gt;一致性以缓存为准：创建时双写，数据库作为备份，若数据有更新可能需要定时持久化；&lt;/li&gt;
 &lt;/ol&gt;
 
-
 &lt;h2&gt;Memcache 小抄&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -357,12 +482,11 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 &lt;li&gt;逐出使用 LRU 算法，创建后不被获取的数据可能会比已过期数据更易逐出；&lt;/li&gt;
 &lt;li&gt;已过期数据只要不被获取就不会被删除，仍旧会占用内存，使用离散键的缓存会造成内存虚高；&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;&lt;code&gt;stats cachedump slab_id limit_num&lt;/code&gt;，显示某个 slab 中的前 limit_num 个 key 列表，输出格式为：
- &lt;code&gt;ITEM key_name [ value_length b; expire_time|access_time s]&lt;/code&gt;&lt;/p&gt;
+&lt;code&gt;ITEM key_name [ value_length b; expire_time|access_time s]&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt; 其中，memcached 1.2.2 及以前版本显示的是访问时间(timestamp)，1.2.4 以上版本，包括 1.2.4 显示过期时间(timestamp)；
- 如果是永不过期的 key，expire_time 会显示为服务器启动的时间。&lt;/p&gt;&lt;/li&gt;
+&lt;p&gt;其中，memcached 1.2.2 及以前版本显示的是访问时间(timestamp)，1.2.4 以上版本，包括 1.2.4 显示过期时间(timestamp)；
+如果是永不过期的 key，expire_time 会显示为服务器启动的时间。&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
-
 </description>
         <pubDate>Wed, 23 Sep 2015 00:00:00 +0800</pubDate>
         <link>http://blog.joyjy.im/2015/09/23/cache-strategy-in-web-app.html</link>
@@ -373,8 +497,10 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
     
       <item>
         <title>代码复查对照表</title>
-        <description>&lt;blockquote&gt;&lt;p&gt;Make Lists, Not War.
- - workflowy.com&lt;/p&gt;&lt;/blockquote&gt;
+        <description>&lt;blockquote&gt;
+&lt;p&gt;Make Lists, Not War.
+ - workflowy.com&lt;/p&gt;
+&lt;/blockquote&gt;
 
 &lt;p&gt;最近在试用 &lt;a href=&quot;https://workflowy.com/invite/2a92edbd.lnx&quot;&gt;Workflowy&lt;/a&gt;（我的推广注册链接，验证邮箱后两个人每月都可以增加 250 个节点，反感的话用引言那样没有尾巴的连接即可），深深觉得清单是个好东西，正在&lt;s&gt;三分钟热度地&lt;/s&gt;把之前屯的东西整理知识点出来。&lt;/p&gt;
 
@@ -388,9 +514,8 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 
 &lt;ul&gt;
 &lt;li&gt;是否正确处理事务&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;注释是否容易理解 &lt;em&gt;// &lt;strong&gt;注释是为了说明why而不是what&lt;/strong&gt;&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;注释是否容易理解 &lt;em&gt;// *&lt;/em&gt;注释是为了说明why而不是what***&lt;/li&gt;
 &lt;li&gt;代码是否容易理解
 
 &lt;ul&gt;
@@ -401,13 +526,11 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 &lt;li&gt;是否嵌套过深&lt;/li&gt;
 &lt;li&gt;能否正确结束&lt;/li&gt;
 &lt;li&gt;中途错误时应该 &lt;code&gt;break&lt;/code&gt; 还是 &lt;code&gt;continue&lt;/code&gt;，为什么&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;分支是否采用 &lt;code&gt;if...return&lt;/code&gt; 而不是 &lt;code&gt;if..else...&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;三元表达式一眼就可理解吗&lt;/li&gt;
 &lt;li&gt;递归能让代码变得更好理解吗&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;是否存在风格不良代码
 
 &lt;ul&gt;
@@ -416,8 +539,7 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 &lt;li&gt;注释的代码&lt;/li&gt;
 &lt;li&gt;重复实现了类库提供功能&lt;/li&gt;
 &lt;li&gt;日志和调试代码参与流程&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;安全
 
 &lt;ul&gt;
@@ -427,25 +549,21 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 &lt;ul&gt;
 &lt;li&gt;编码和解码次数是否一致（注意框架的行为）&lt;/li&gt;
 &lt;li&gt;编码后传输是否存在特殊字符&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;输出的数据是否存在需要掩藏的部分&lt;/li&gt;
 &lt;li&gt;第三方工具的错误是否被正确处理了&lt;/li&gt;
 &lt;li&gt;是否处理了边界值&lt;/li&gt;
 &lt;li&gt;是否有未捕获异常的统一处理&lt;/li&gt;
 &lt;li&gt;所有的异常都能被记录吗&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;文档
 
 &lt;ul&gt;
 &lt;li&gt;是否存在接口文档&lt;/li&gt;
 &lt;li&gt;是否存在数据字典&lt;/li&gt;
 &lt;li&gt;未实现的方法到底是 NotImplemented 还是 NotSupported&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;/ol&gt;
-
 </description>
         <pubDate>Wed, 11 Feb 2015 00:00:00 +0800</pubDate>
         <link>http://blog.joyjy.im/2015/02/11/code-review-checklist.html</link>
@@ -469,23 +587,20 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 &lt;li&gt;Package (Depencency) Manager：包依赖管理器&lt;/li&gt;
 &lt;/ul&gt;
 
-
 &lt;p&gt;IDE 是可以集成其他两项功能的，但如果操作的时候概念不清晰，就会造成一大堆麻烦事。最后的结果就是生成的时候变成一团乱麻。&lt;/p&gt;
 
 &lt;p&gt;那么这三者在源码的构建过程中是如何协作的呢？以我们的环境（Visual Studio，TFS，Nuget）说明：&lt;/p&gt;
 
 &lt;p&gt;VS 以解决方案为单位组织源码，解决方案文件夹映射到文件系统文件夹。解决方案下有多个项目，可以位于不同的文件系统文件夹。项目可以引用解决方案内的其他项目或任意文件位置的 .dll 文件，引用会被声明在 .csproj 文件中：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;ProjectReference&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Include=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;..\ProjectFolder\Project.csproj&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;Project&amp;gt;&lt;/span&gt;{e737ac4a-1ea8-4fae-8b7b-05b908608f2d}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Project&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;Name&amp;gt;&lt;/span&gt;ProjectName&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Name&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/ProjectReference&amp;gt;&lt;/span&gt;
 
-&lt;pre&gt;&lt;code class=&quot;xml&quot;&gt;&amp;lt;ProjectReference Include=&quot;..\ProjectFolder\Project.csproj&quot;&amp;gt;
-    &amp;lt;Project&amp;gt;{e737ac4a-1ea8-4fae-8b7b-05b908608f2d}&amp;lt;/Project&amp;gt;
-    &amp;lt;Name&amp;gt;ProjectName&amp;lt;/Name&amp;gt;
-&amp;lt;/ProjectReference&amp;gt;
-
-&amp;lt;Reference Include=&quot;DllName&quot;&amp;gt;
-    &amp;lt;HintPath&amp;gt;..\Lib\Dll.dll&amp;lt;/HintPath&amp;gt;
-&amp;lt;/Reference&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;Reference&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;Include=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;DllName&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;HintPath&amp;gt;&lt;/span&gt;..\Lib\Dll.dll&lt;span class=&quot;nt&quot;&gt;&amp;lt;/HintPath&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/Reference&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Nuget 使用项目下的 packages.config 管理 dll 引用，当添加 Nuget 包时会进行以下操作：
     1. 下载 .dll 文件到解决方案映射的文件系统文件夹中的 \packages 目录下；
     2. 修改项目 packages.config 文件，添加要引用的 Nuget 包信息；
@@ -493,7 +608,7 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 
 &lt;p&gt;TFS 默认只管理解决方案创建时映射到的文件系统文件夹，\packages 文件夹默认不会添加到源码管理中。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/nuget-vs-and-tfs.png&quot; alt=&quot;nuget,vs and tfs&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/nuget-vs-and-tfs.png&quot; alt=&quot;nuget,vs and tfs&quot;&gt;&lt;/p&gt;
 
 &lt;p&gt;要注意的是源码管理是只关心它监视的文件的，只是服务器上也有一套集成环境在构建的时候用来做和本地一样的事。&lt;/p&gt;
 
@@ -504,60 +619,53 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;文件直接拖动到了 Visual Studio 里&lt;/p&gt;
 
-&lt;p&gt; 是的，VS 支持这样的操作，然后，它会在自己的 .csproj 里添加一个 &amp;lt;Compile&gt;（表示是需要编译的文件，如果是静态文件会是 &amp;lt;Content&gt;）节点，记录该文件的文件路径。&lt;/p&gt;
+&lt;p&gt;是的，VS 支持这样的操作，然后，它会在自己的 .csproj 里添加一个 &lt;Compile\&gt;（表示是需要编译的文件，如果是静态文件会是 &lt;Content\&gt;）节点，记录该文件的文件路径。&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;这样自然会找不到了；&lt;/li&gt;
 &lt;li&gt;把文件签入到源码管理也不行，那东西用的是相对路径；&lt;/li&gt;
 &lt;li&gt;而且各处的相对路径关系还要一致。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;引用了另外一个项目 \bin 下的 .dll 文件&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;\bin 默认是不会被添加到源代码管理的（都是自动生成的二进制文件版本控制个啥）；&lt;/li&gt;
 &lt;li&gt;不知道这样操作的原意是不是项目引用，如果是跨解决方案项目引用而有没有声明为依赖的话，那个项目根本不会生成，也就没有指定的 dll；&lt;/li&gt;
 &lt;li&gt;手动添加了，其他开发者那里生成就会冲突。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;添加到源码管理时没有包含 .dll 文件&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;这是 TFS 的特性了，向源码管理中添加文件夹，自动会把 .dll 等文件过滤掉，在最后一步列在“排除项”选项卡中，需要手动包含；&lt;/li&gt;
 &lt;li&gt;不仔细看界面的人，你们的电脑上有多少捆绑的插件？&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;解决方案文件夹不是真实的&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;建立一个解决方案文件夹，它在文件系统里是没有的；&lt;/li&gt;
 &lt;li&gt;他们就是这么设计的，所以搞乱了也能使；&lt;/li&gt;
 &lt;li&gt;但是你会死的很惨。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;特定框架依赖&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;有的 dll 是框架提供的，不同机器上有可能有微小的版本号差异，把&lt;em&gt;引用 -&gt; 右键属性 -&gt; 特定版本&lt;/em&gt;修改为 False；&lt;/li&gt;
-&lt;li&gt;要部署的服务器没安装过框架，还是&lt;em&gt;属性 -&gt; 复制到输出&lt;/em&gt;修改为 True。（dll 查找加载顺序是运行目录 &gt; 注册的框架 &gt; 系统）&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;li&gt;有的 dll 是框架提供的，不同机器上有可能有微小的版本号差异，把&lt;em&gt;引用 -&amp;gt; 右键属性 -&amp;gt; 特定版本&lt;/em&gt;修改为 False；&lt;/li&gt;
+&lt;li&gt;要部署的服务器没安装过框架，还是&lt;em&gt;属性 -&amp;gt; 复制到输出&lt;/em&gt;修改为 True。（dll 查找加载顺序是运行目录 &amp;gt; 注册的框架 &amp;gt; 系统）&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;TFS 上的 Nuget 还原不工作&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;如果用私服了需要配置；&lt;/li&gt;
 &lt;li&gt;不过只要源码管理里 \packages 文件夹里有文件就可以了，而且还原很慢所以我们都这么玩；&lt;/li&gt;
 &lt;li&gt;有时候会发现解决方案里已安装的 Nuget 包没有安装到任何一个项目里，这时就该把它从 \packages 文件夹删掉了；&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;分支导致了项目相对路径变化&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;分支的时候&lt;strong&gt;不要变换目录层级&lt;/strong&gt;；&lt;/li&gt;
 &lt;li&gt;这样至少还引用的是同样的跨解决方案项目；&lt;/li&gt;
 &lt;li&gt;引用的项目也需要分支？上帝保佑你。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;跨解决方案引用被 Nuget 还原更改了源路径&lt;/p&gt;
 
 &lt;ul&gt;
@@ -569,49 +677,47 @@ private static BigInteger ConvertBigInteger(byte[] originBytes)
 &lt;li&gt;打开解决方案 A，Nuget 检测到缺少 dll 需要下载，提示 Nuget 还原；&lt;/li&gt;
 &lt;li&gt;Nuget 还原下载 dll 到解决方案 A 的 \packages 文件夹，更新所有声明了这个包的项目引用，其中包括 ProjectB；&lt;/li&gt;
 &lt;li&gt;签入了 ProjectB；&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
+&lt;/ol&gt;&lt;/li&gt;
 &lt;li&gt;如果有跨解决方案引用项目，先去那个解决方案生成通过再回来开发。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;不同项目引用了不同版本 Nuget，生成顺序导致覆盖&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;在·解·决·方·案·里·管·理·N·u·g·e·t&lt;/strong&gt;；&lt;/li&gt;
 &lt;li&gt;都用最高版本；&lt;/li&gt;
 &lt;li&gt;被依赖版本不需要卸载，直接用高版本勾选低版本安装到的项目就可以覆盖。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Nuget 的 packages.config 和实际引用的 dll 不一致&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;我不知道他们怎么做到的；&lt;/li&gt;
 &lt;li&gt;他们做到了；&lt;/li&gt;
 &lt;li&gt;我手动改回来的，让我死。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
 &lt;/ol&gt;
-
 
 &lt;h2&gt;此处应该有总结&lt;/h2&gt;
 
 &lt;p&gt;有很多问题是混用不同包管理策略引起的，所以第一就是……不要混用不同包管理策略……&lt;/p&gt;
 
-&lt;p&gt;第二，&lt;s&gt;我们要从薪资上打击敌人！&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/s&gt;减少依赖会降低复杂度（大概）；&lt;/p&gt;
+&lt;p&gt;第二，&lt;s&gt;我们要从薪资上打击敌人！&lt;sup id=&quot;fnref1&quot;&gt;&lt;a href=&quot;#fn1&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/s&gt;减少依赖会降低复杂度（大概）；&lt;/p&gt;
 
 &lt;p&gt;第三，最好把它们是怎么协作的搞懂，反正原理应该差不多就这样了。&lt;/p&gt;
 
 &lt;p&gt;另外，当向源码管理中提交的时候，看一下变更列表，发现有&lt;strong&gt;咦我没有改过&lt;/strong&gt;的文件时，看一眼它被改了什么。&lt;/p&gt;
 
 &lt;p&gt;另另外，如果需要指定版本的 Nuget，可以利用还原功能实现。&lt;/p&gt;
+
 &lt;div class=&quot;footnotes&quot;&gt;
-&lt;hr/&gt;
+&lt;hr&gt;
 &lt;ol&gt;
-&lt;li id=&quot;fn:1&quot;&gt;
-&lt;p&gt;出自&lt;a href=&quot;http://book.douban.com/subject/1427322/&quot;&gt;《战争学徒》&lt;/a&gt;&lt;a href=&quot;#fnref:1&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li id=&quot;fn1&quot;&gt;
+&lt;p&gt;出自&lt;a href=&quot;http://book.douban.com/subject/1427322/&quot;&gt;《战争学徒》&lt;/a&gt;&amp;nbsp;&lt;a href=&quot;#fnref1&quot; rev=&quot;footnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+
 &lt;/ol&gt;
 &lt;/div&gt;
-
 </description>
         <pubDate>Sun, 08 Feb 2015 00:00:00 +0800</pubDate>
         <link>http://blog.joyjy.im/2015/02/08/welcome-to-the-dll-hell.html</link>

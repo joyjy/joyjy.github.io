@@ -75,14 +75,12 @@
 <li>特点：数据大小、过期时间不一致；占用内存较小，生成及使用间隔时间较短；</li>
 </ul>
 
-
 <p>策略：</p>
 
 <ol>
 <li>使用集中式缓存</li>
 <li>过期时间较长且访问频率低的需要考虑独立存储防止被过期算法逐出；</li>
 </ol>
-
 
 <h3>缓存数据（DB Cache）</h3>
 
@@ -92,7 +90,6 @@
 <li>与数据库存在一致性要求；</li>
 <li>过期时间可能需要根据压力经常调整；</li>
 </ul>
-
 
 <p>策略：</p>
 
@@ -105,11 +102,9 @@
 <li>抖动：避免同时过期；</li>
 <li>争先：读写锁模式，发现数据过期，其他线程阻塞直到更新；</li>
 <li>延时：在数据过期前更新；</li>
-</ol>
-</li>
+</ol></li>
 <li>一致性数据库为准，如有改变应当使缓存过期或更新；</li>
 </ol>
-
 
 <h3>热数据（Hot Cache）</h3>
 
@@ -120,7 +115,6 @@
 <li>需要在负载均衡服务器间共享状态；</li>
 </ul>
 
-
 <p>策略：</p>
 
 <ol>
@@ -129,7 +123,6 @@
 <li>一致性以缓存为准：创建时双写，数据库作为备份，若数据有更新可能需要定时持久化；</li>
 </ol>
 
-
 <h2>Memcache 小抄</h2>
 
 <ol>
@@ -137,12 +130,11 @@
 <li>逐出使用 LRU 算法，创建后不被获取的数据可能会比已过期数据更易逐出；</li>
 <li>已过期数据只要不被获取就不会被删除，仍旧会占用内存，使用离散键的缓存会造成内存虚高；</li>
 <li><p><code>stats cachedump slab_id limit_num</code>，显示某个 slab 中的前 limit_num 个 key 列表，输出格式为：
- <code>ITEM key_name [ value_length b; expire_time|access_time s]</code></p>
+<code>ITEM key_name [ value_length b; expire_time|access_time s]</code></p>
 
-<p> 其中，memcached 1.2.2 及以前版本显示的是访问时间(timestamp)，1.2.4 以上版本，包括 1.2.4 显示过期时间(timestamp)；
- 如果是永不过期的 key，expire_time 会显示为服务器启动的时间。</p></li>
+<p>其中，memcached 1.2.2 及以前版本显示的是访问时间(timestamp)，1.2.4 以上版本，包括 1.2.4 显示过期时间(timestamp)；
+如果是永不过期的 key，expire_time 会显示为服务器启动的时间。</p></li>
 </ol>
-
 
   </article>
 

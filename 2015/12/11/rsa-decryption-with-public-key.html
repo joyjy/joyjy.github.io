@@ -68,9 +68,9 @@
 
 <p>然而 .Net 并不提供 RSA 公钥解密算法实现，在 <a href="https://msdn.microsoft.com/zh-cn/library/system.security.cryptography.rsacryptoserviceprovider\(v=vs.100\).aspx" target="_blank">MSDN</a> 里明确指出<code>Encrypt</code>只能用公钥，<code>Decrypt</code>用私钥，<code>SignData</code>也用私钥，那么<code>VerifyData</code>或者<code>VerifyHash</code>自然就只能用公钥；最后，实例化密钥用的<a href="https://msdn.microsoft.com/zh-cn/library/system.security.cryptography.rsaparameters(v=vs.100).aspx" target="_blank"><code>RSAParameters</code></a>结构要么从 XML 导入，要么手动给以下属性赋值（顺便提一句，这些属性全都是二进制数组）：</p>
 
-<p><img src="/assets/rsa_parameters_please_saying_english.png" alt="" /></p>
+<p><img src="/assets/rsa_parameters_please_saying_english.png" alt=""></p>
 
-<p><img src="/assets/are_you_fucking_kidding_me.jpg" alt="" /></p>
+<p><img src="/assets/are_you_fucking_kidding_me.jpg" alt=""></p>
 
 <p>当时花了挺长时间学习实现了一段公钥解密代码，今天友商提供了之前不支持的 2048 位密钥，在数二进制的时候发现自己忘得差不多了，于是就整理一下写下来。</p>
 
@@ -79,19 +79,15 @@
 <p>这一节的内容主要来源于 <a href="http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html" target="_blank">阮一峰：RSA算法原理（二）</a>。</p>
 
 <p>请尝试计算下面两个式子：</p>
-
-<pre><code>(65^17)%3233 // 65 的 17 次方对 3233 求余
+<div class="highlight"><pre><code class="language-" data-lang="">(65^17)%3233 // 65 的 17 次方对 3233 求余
 (2790^2753)%3233 // 2790 的 2753 次方对 3233 求余
-</code></pre>
-
+</code></pre></div>
 <p>一般的计算器比较困难，不过我们有天生支持大整数的 python：</p>
-
-<pre><code class="python">&gt;&gt;&gt; divmod(pow(65,17),3233)
-(2041368261935227977399887995L, 2790L)
-&gt;&gt;&gt; divmod(pow(2790,2753),3233)
-(1732&lt;此处省略9475位数字&gt;1695L, 65L)
-</code></pre>
-
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="o">&gt;&gt;&gt;</span> <span class="nb">divmod</span><span class="p">(</span><span class="nb">pow</span><span class="p">(</span><span class="mi">65</span><span class="p">,</span><span class="mi">17</span><span class="p">),</span><span class="mi">3233</span><span class="p">)</span>
+<span class="p">(</span><span class="il">2041368261935227977399887995L</span><span class="p">,</span> <span class="il">2790L</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">divmod</span><span class="p">(</span><span class="nb">pow</span><span class="p">(</span><span class="mi">2790</span><span class="p">,</span><span class="mi">2753</span><span class="p">),</span><span class="mi">3233</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">1732</span><span class="o">&lt;</span><span class="err">此处省略</span><span class="mi">9475</span><span class="err">位数字</span><span class="o">&gt;</span><span class="il">1695L</span><span class="p">,</span> <span class="il">65L</span><span class="p">)</span>
+</code></pre></div>
 <p>一开始的 65 经过了和 17、3233 的运算，得到余数 2790；然后 2790 和 2753 以及又一个 3233 的运算，又回到了 65。这就是 RSA 的原理。</p>
 
 <p>不要急着动粗。你猜的对，这个论述省略了很多东西。</p>
@@ -103,9 +99,8 @@
 <ol>
 <li>3233（算法中符号是 n，此后同）是任意选取的两个质数 61（p） 和 53（q） 的乘积；</li>
 <li>17（e） 是介于 1 和 (61-1)*(53-1)=3120 之间，并且和 3120 互质的一个随机数；</li>
-<li>2753（d） 是 17 对于 3120 的模反元素<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>；</li>
+<li>2753（d） 是 17 对于 3120 的模反元素<sup id="fnref1"><a href="#fn1" rel="footnote">1</a></sup>；</li>
 </ol>
-
 
 <p>在 RSA 算法 PKCS#1 的定义中：</p>
 
@@ -115,218 +110,213 @@
 <li>2753（d） 叫做 privateExponent，私钥指数；</li>
 </ul>
 
-
 <p>那么所谓的公钥，就是 {e, n} 这一对整数，而私钥则是 {d, n}。</p>
 
 <h3>因式分解是很困难的</h3>
 
 <p>在已知 {e, n} 的情况下，想要得到 d，唯一（不一定，但反正还没有证明）的办法就是通过 n 因式分解得到 p 和 q；RSA 算法的安全性就在于保证这两个数足够大，让没有计算机能够在允许的时间成本内计算出结果。上面的例子中 3233 写成二进制是 12 位，那它就是一个 12 位的密钥，现实的应用中，使用的主要是 1024 和 2048 位的密钥；</p>
 
-<p>不过说起来，好像已经有<a href="http://www.solidot.org/story?sid=46469" target="_blank">能用的量子计算机</a><sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup>了。不知道这次这台“万能解密机”会不会被人炸掉<sup id="fnref:3"><a href="#fn:3" rel="footnote">3</a></sup>。</p>
+<p>不过说起来，好像已经有<a href="http://www.solidot.org/story?sid=46469" target="_blank">能用的量子计算机</a><sup id="fnref2"><a href="#fn2" rel="footnote">2</a></sup>了。不知道这次这台“万能解密机”会不会被人炸掉<sup id="fnref3"><a href="#fn3" rel="footnote">3</a></sup>。</p>
 
 <h2>公钥解密实现</h2>
 
 <p>有了上面的原理，再加上 .Net Frameworks 4.0 里已经提供了<a href="https://msdn.microsoft.com/zh-cn/library/system.numerics.BigInteger(v=vs.100).aspx" target="_blank"><code>BigInteger</code></a>类，看起来这个问题没有一开始那么吓人了，撸起袖子上吧：</p>
+<div class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">modulus</span> <span class="p">=</span> <span class="n">BigInteger</span><span class="p">.</span><span class="nf">Parse</span><span class="p">(</span><span class="n">modulusString</span><span class="p">);</span>
+<span class="n">var</span> <span class="n">exponent</span> <span class="p">=</span> <span class="n">BigInteger</span><span class="p">.</span><span class="nf">Parse</span><span class="p">(</span><span class="n">exponentString</span><span class="p">);</span>
 
-<pre><code class="csharp">var modulus = BigInteger.Parse(modulusString);
-var exponent = BigInteger.Parse(exponentString);
+<span class="n">var</span> <span class="n">encryptBytes</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="nf">FromBase64String</span><span class="p">(</span><span class="n">encryptText</span><span class="p">);</span>
+<span class="n">var</span> <span class="k">value</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">BigInteger</span><span class="p">(</span><span class="n">encryptBytes</span><span class="p">);</span>
 
-var encryptBytes = Convert.FromBase64String(encryptText);
-var value = new BigInteger(encryptBytes);
+<span class="n">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">BigInteger</span><span class="p">.</span><span class="nf">ModPow</span><span class="p">(</span><span class="k">value</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">modulus</span><span class="p">);</span>
+<span class="n">var</span> <span class="n">resultBytes</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="nf">ToByteArray</span><span class="p">();</span>
 
-var result = BigInteger.ModPow(value, exponent, modulus);
-var resultBytes = result.ToByteArray();
-
-return Encoding.UTF8.GetString(resultBytes);
-</code></pre>
-
+<span class="k">return</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="nf">GetString</span><span class="p">(</span><span class="n">resultBytes</span><span class="p">);</span>
+</code></pre></div>
 <p>执行以上代码将无法得到正确结果，是因为 BigInteger 在使用字节数组初始化的时候，要求参数使用小<a href="https://zh.wikipedia.org/zh/%E5%AD%97%E8%8A%82%E5%BA%8F" target="_blank">字节序</a>，应当进行如下修改：</p>
+<div class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">modulus</span> <span class="p">=</span> <span class="n">BigInteger</span><span class="p">.</span><span class="nf">Parse</span><span class="p">(</span><span class="n">modulusString</span><span class="p">);</span>
+<span class="n">var</span> <span class="n">exponent</span> <span class="p">=</span> <span class="n">BigInteger</span><span class="p">.</span><span class="nf">Parse</span><span class="p">(</span><span class="n">exponentString</span><span class="p">);</span>
 
-<pre><code class="csharp">var modulus = BigInteger.Parse(modulusString);
-var exponent = BigInteger.Parse(exponentString);
+<span class="n">var</span> <span class="n">encryptBytes</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="nf">FromBase64String</span><span class="p">(</span><span class="n">text</span><span class="p">);</span>
+<span class="n">Array</span><span class="p">.</span><span class="nf">Reverse</span><span class="p">(</span><span class="n">encryptBytes</span><span class="p">);</span> <span class="c1">// 需要调整字节序，BigIntenger 需要 little-endian
+</span><span class="k">if</span> <span class="p">((</span><span class="n">encryptBytes</span><span class="p">[</span><span class="n">encryptBytes</span><span class="p">.</span><span class="n">Length</span> <span class="p">-</span> <span class="m">1</span><span class="p">]</span> <span class="p">&amp;</span> <span class="m">0x80</span><span class="p">)</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span> <span class="c1">// 如果最后一个字节第一位为1，追加一个 00 避免生成负数
+</span><span class="p">{</span>
+    <span class="n">var</span> <span class="n">temp</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="p">[</span><span class="n">encryptBytes</span><span class="p">.</span><span class="n">Length</span><span class="p">];</span>
+    <span class="n">Array</span><span class="p">.</span><span class="nf">Copy</span><span class="p">(</span><span class="n">encryptBytes</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">encryptBytes</span><span class="p">.</span><span class="n">Length</span><span class="p">);</span>
+    <span class="n">encryptBytes</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="p">[</span><span class="n">temp</span><span class="p">.</span><span class="n">Length</span> <span class="p">+</span> <span class="m">1</span><span class="p">];</span>
+    <span class="n">Array</span><span class="p">.</span><span class="nf">Copy</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">encryptBytes</span><span class="p">,</span> <span class="n">temp</span><span class="p">.</span><span class="n">Length</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">var</span> <span class="k">value</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">BigInteger</span><span class="p">(</span><span class="n">encryptBytes</span><span class="p">);</span>
 
-var encryptBytes = Convert.FromBase64String(text);
-Array.Reverse(encryptBytes); // 需要调整字节序，BigIntenger 需要 little-endian
-if ((encryptBytes[encryptBytes.Length - 1] &amp; 0x80) &gt; 0) // 如果最后一个字节第一位为1，追加一个 00 避免生成负数
-{
-    var temp = new byte[encryptBytes.Length];
-    Array.Copy(encryptBytes, temp, encryptBytes.Length);
-    encryptBytes = new byte[temp.Length + 1];
-    Array.Copy(temp, encryptBytes, temp.Length);
-}
-var value = new BigInteger(encryptBytes);
-
-var result = BigInteger.ModPow(value, exponent, modulus);
-var resultBytes = result.ToByteArray();
-Array.Reverse(resultBytes); // 调整顺序
-
-int index = Array.FindIndex(resultBytes, b =&gt; b == 0) + 1;
-return Encoding.UTF8.GetString(resultBytes, index, resultBytes.Length - index); // 排除掉旋转后多余的0
-</code></pre>
-
+<span class="n">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">BigInteger</span><span class="p">.</span><span class="nf">ModPow</span><span class="p">(</span><span class="k">value</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">modulus</span><span class="p">);</span>
+<span class="n">var</span> <span class="n">resultBytes</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="nf">ToByteArray</span><span class="p">();</span>
+<span class="n">Array</span><span class="p">.</span><span class="nf">Reverse</span><span class="p">(</span><span class="n">resultBytes</span><span class="p">);</span> <span class="c1">// 调整顺序
+</span>
+<span class="kt">int</span> <span class="n">index</span> <span class="p">=</span> <span class="n">Array</span><span class="p">.</span><span class="nf">FindIndex</span><span class="p">(</span><span class="n">resultBytes</span><span class="p">,</span> <span class="n">b</span> <span class="p">=&gt;</span> <span class="n">b</span> <span class="p">==</span> <span class="m">0</span><span class="p">)</span> <span class="p">+</span> <span class="m">1</span><span class="p">;</span>
+<span class="k">return</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="nf">GetString</span><span class="p">(</span><span class="n">resultBytes</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">resultBytes</span><span class="p">.</span><span class="n">Length</span> <span class="p">-</span> <span class="n">index</span><span class="p">);</span> <span class="c1">// 排除掉旋转后多余的0
+</span></code></pre></div>
 <p>这段代码勉强达到了可用标准，但还有一些缺陷：</p>
 
 <ol>
-<li><p><code>modulusString</code> 和 <code>exponentString</code> 是从哪块石头里蹦出来的？</p>
-
-<p>答：用 Java 打印的；</p></li>
-<li><p>密文太长和太短的情况下都有乱码，为什么？</p>
-
-<p>答：跟密钥长度相关，具体还不知道；</p></li>
+<li><code>modulusString</code> 和 <code>exponentString</code> 是从哪块石头里蹦出来的？</li>
 </ol>
 
+<p>答：用 Java 打印的；
+2. 密文太长和太短的情况下都有乱码，为什么？</p>
+
+<p>答：跟密钥长度相关，具体还不知道；</p>
 
 <p>由于最迫切的功能实现了，这两个问题也就一直拖了很久。</p>
 
 <h3>公钥内容解析</h3>
 
 <p>相信不少人的类库里都有一个 <code>RsaFromPkcs8</code> 的类，反正我身为一个代码的搬运工，最早是在支付宝给商户的示例代码里看到的，其中有一个 <code>ConvertFromPublikcKey</code> 方法，用于将一串 RSA 公钥字符串解析成 <code>RSAParameters</code>，里面有几个<a href="https://zh.wikipedia.org/wiki/%E9%AD%94%E8%A1%93%E6%95%B8%E5%AD%97" target="_blank">魔法数字</a>：</p>
-
-<pre><code class="csharp">private static RSAParameters ConvertFromPublicKey(string pemFileConent)
-{
-    byte[] keyData = Convert.FromBase64String(pemFileConent);
-    if (keyData.Length &lt; 162)
-    {
-        throw new ArgumentException("pem file content is incorrect.");
-    }
-    byte[] pemModulus = new byte[128];
-    byte[] pemPublicExponent = new byte[3];
-    Array.Copy(keyData, 29, pemModulus, 0, 128);
-    Array.Copy(keyData, 159, pemPublicExponent, 0, 3);
-    RSAParameters para = new RSAParameters();
-    para.Modulus = pemModulus;
-    para.Exponent = pemPublicExponent;
-    return para;
-}
-</code></pre>
-
+<div class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">private</span> <span class="k">static</span> <span class="n">RSAParameters</span> <span class="nf">ConvertFromPublicKey</span><span class="p">(</span><span class="kt">string</span> <span class="n">pemFileConent</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">byte</span><span class="p">[]</span> <span class="n">keyData</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="nf">FromBase64String</span><span class="p">(</span><span class="n">pemFileConent</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">keyData</span><span class="p">.</span><span class="n">Length</span> <span class="p">&lt;</span> <span class="m">162</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentException</span><span class="p">(</span><span class="s">"pem file content is incorrect."</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="kt">byte</span><span class="p">[]</span> <span class="n">pemModulus</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="p">[</span><span class="m">128</span><span class="p">];</span>
+    <span class="kt">byte</span><span class="p">[]</span> <span class="n">pemPublicExponent</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="p">[</span><span class="m">3</span><span class="p">];</span>
+    <span class="n">Array</span><span class="p">.</span><span class="nf">Copy</span><span class="p">(</span><span class="n">keyData</span><span class="p">,</span> <span class="m">29</span><span class="p">,</span> <span class="n">pemModulus</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">128</span><span class="p">);</span>
+    <span class="n">Array</span><span class="p">.</span><span class="nf">Copy</span><span class="p">(</span><span class="n">keyData</span><span class="p">,</span> <span class="m">159</span><span class="p">,</span> <span class="n">pemPublicExponent</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">3</span><span class="p">);</span>
+    <span class="n">RSAParameters</span> <span class="n">para</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">RSAParameters</span><span class="p">();</span>
+    <span class="n">para</span><span class="p">.</span><span class="n">Modulus</span> <span class="p">=</span> <span class="n">pemModulus</span><span class="p">;</span>
+    <span class="n">para</span><span class="p">.</span><span class="n">Exponent</span> <span class="p">=</span> <span class="n">pemPublicExponent</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">para</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>有了上面的基础知识，我们已经知道了公钥里有两个整数，分别是 modulus 和 publicExponent，这段代码赋值给 Modulus 属性是个长度 128 的字节数组，那就是说这段代码针对的是 128*8=1024 位的密钥。道理我都懂，可魔法数字到底是哪来的？</p>
 
 <p>本来我是不需要知道答案的。但随着友商的增多，出现了 512 位的密钥，这个方法理所应当地报错了，因此必须修改代码支持 512 和 2048 位的公钥。</p>
 
 <p>PKCS#1 中规定了 RSA 的公私钥格式，在 PKCS#8 中，规定了 Apache 读取证书私钥的标准。公钥使用 <a href="https://zh.wikipedia.org/zh-cn/ASN.1" target="_blank">ASN.1</a> 编码，感谢<a href="http://boytnt.blog.51cto.com/966121/1351089" target="_blank">兔子窝：C#与Java的RSA（2）</a>这篇文章（咦，为什么又是2…），照着他完成了 512 和 2048 位密钥的硬编码：找到<code>03（BIT STRING）</code>后的<code>30（SEQUENCE）</code>后的<code>02（INTEGER）</code>，再读取 INTEGER 节指定的字节长度（注意区分长形式和短形式），跳过开头的<code>00</code>后面的数据就是公钥的 modulus，而 publicExponent 是同理下一个整数；于是，我们就得到了……更多魔法数字！</p>
-
-<pre><code class="csharp">private static RSAParameters ConvertPublicKey(string pemPublicKey)
-{
-    byte[] keyBytes = Convert.FromBase64String(pemPublicKey);
-    byte[] modulus;
-    switch (keyBytes.Length)
-    {
-        case 94: // 64×8=512位密钥固定长度
-            modulus = new byte[64];
-            Array.Copy(keyBytes, 25, modulus, 0, modulus.Length);
-            break;
-        case 162: // 128×8=1024位密钥固定长度
-            modulus = new byte[128];
-            Array.Copy(keyBytes, 29, modulus, 0, modulus.Length);
-            break;
-        case 294: // 256×8=2048位密钥固定长度
-            modulus = new byte[256];
-            Array.Copy(keyBytes, 33, modulus, 0, modulus.Length);
-            break;
-        default:
-            throw new NotSupportedException("不支持的公钥长度");
-    }
-    byte[] publicExponent = new byte[3];
-    Array.Copy(keyBytes, keyBytes.Length - 3, publicExponent, 0, 3); // 都是 65537
-
-    return new RSAParameters { Modulus = modulus, Exponent = publicExponent };
-}
-</code></pre>
-
+<div class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">private</span> <span class="k">static</span> <span class="n">RSAParameters</span> <span class="nf">ConvertPublicKey</span><span class="p">(</span><span class="kt">string</span> <span class="n">pemPublicKey</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">byte</span><span class="p">[]</span> <span class="n">keyBytes</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="nf">FromBase64String</span><span class="p">(</span><span class="n">pemPublicKey</span><span class="p">);</span>
+    <span class="kt">byte</span><span class="p">[]</span> <span class="n">modulus</span><span class="p">;</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="n">keyBytes</span><span class="p">.</span><span class="n">Length</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">case</span> <span class="m">94</span><span class="p">:</span> <span class="c1">// 64×8=512位密钥固定长度
+</span>            <span class="n">modulus</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="p">[</span><span class="m">64</span><span class="p">];</span>
+            <span class="n">Array</span><span class="p">.</span><span class="nf">Copy</span><span class="p">(</span><span class="n">keyBytes</span><span class="p">,</span> <span class="m">25</span><span class="p">,</span> <span class="n">modulus</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">modulus</span><span class="p">.</span><span class="n">Length</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="m">162</span><span class="p">:</span> <span class="c1">// 128×8=1024位密钥固定长度
+</span>            <span class="n">modulus</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="p">[</span><span class="m">128</span><span class="p">];</span>
+            <span class="n">Array</span><span class="p">.</span><span class="nf">Copy</span><span class="p">(</span><span class="n">keyBytes</span><span class="p">,</span> <span class="m">29</span><span class="p">,</span> <span class="n">modulus</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">modulus</span><span class="p">.</span><span class="n">Length</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="m">294</span><span class="p">:</span> <span class="c1">// 256×8=2048位密钥固定长度
+</span>            <span class="n">modulus</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="p">[</span><span class="m">256</span><span class="p">];</span>
+            <span class="n">Array</span><span class="p">.</span><span class="nf">Copy</span><span class="p">(</span><span class="n">keyBytes</span><span class="p">,</span> <span class="m">33</span><span class="p">,</span> <span class="n">modulus</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">modulus</span><span class="p">.</span><span class="n">Length</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">default</span><span class="p">:</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">NotSupportedException</span><span class="p">(</span><span class="s">"不支持的公钥长度"</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="kt">byte</span><span class="p">[]</span> <span class="n">publicExponent</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="p">[</span><span class="m">3</span><span class="p">];</span>
+    <span class="n">Array</span><span class="p">.</span><span class="nf">Copy</span><span class="p">(</span><span class="n">keyBytes</span><span class="p">,</span> <span class="n">keyBytes</span><span class="p">.</span><span class="n">Length</span> <span class="p">-</span> <span class="m">3</span><span class="p">,</span> <span class="n">publicExponent</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">3</span><span class="p">);</span> <span class="c1">// 都是 65537
+</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="n">RSAParameters</span> <span class="p">{</span> <span class="n">Modulus</span> <span class="p">=</span> <span class="n">modulus</span><span class="p">,</span> <span class="n">Exponent</span> <span class="p">=</span> <span class="n">publicExponent</span> <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>好消息是这段代码写完，就可以抛弃上一节的 <code>modulusString</code> 和 <code>exponentString</code> 了；以及我终于知道密钥的真实长度是什么了，因此密文过长的问题也一并解决了：</p>
-
-<pre><code class="csharp">/// &lt;summary&gt;
+<div class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">/// &lt;summary&gt;
 /// RSA 公钥解密
 /// &lt;/summary&gt;
 /// &lt;param name="text"&gt;密文&lt;/param&gt;
 /// &lt;param name="pemPublicKey"&gt;Base64编码公钥文本&lt;/param&gt;
 /// &lt;returns&gt;&lt;/returns&gt;
-public static string Decrypt(string text, string pemPublicKey)
-{
-    var publicKey = ConvertPublicKey(pemPublicKey);
-    return Decrypt(text, publicKey);
-}
+</span><span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">Decrypt</span><span class="p">(</span><span class="kt">string</span> <span class="n">text</span><span class="p">,</span> <span class="kt">string</span> <span class="n">pemPublicKey</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">var</span> <span class="n">publicKey</span> <span class="p">=</span> <span class="nf">ConvertPublicKey</span><span class="p">(</span><span class="n">pemPublicKey</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nf">Decrypt</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">publicKey</span><span class="p">);</span>
+<span class="p">}</span>
 
-/// &lt;summary&gt;
+<span class="c1">/// &lt;summary&gt;
 /// RSA 公钥解密
 /// &lt;/summary&gt;
 /// &lt;param name="text"&gt;密文&lt;/param&gt;
 /// &lt;param name="publicKey"&gt;公钥&lt;/param&gt;
 /// &lt;returns&gt;解密后明文&lt;/returns&gt;
-public static string Decrypt(string text, RSAParameters publicKey)
-{
-    var encryptBytes = Convert.FromBase64String(text);
+</span><span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">Decrypt</span><span class="p">(</span><span class="kt">string</span> <span class="n">text</span><span class="p">,</span> <span class="n">RSAParameters</span> <span class="n">publicKey</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">var</span> <span class="n">encryptBytes</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="nf">FromBase64String</span><span class="p">(</span><span class="n">text</span><span class="p">);</span>
 
-    string result = string.Empty;
-    var modulus = ConvertBigInteger(publicKey.Modulus);
-    var exponent = ConvertBigInteger(publicKey.Exponent);
+    <span class="kt">string</span> <span class="n">result</span> <span class="p">=</span> <span class="kt">string</span><span class="p">.</span><span class="n">Empty</span><span class="p">;</span>
+    <span class="n">var</span> <span class="n">modulus</span> <span class="p">=</span> <span class="nf">ConvertBigInteger</span><span class="p">(</span><span class="n">publicKey</span><span class="p">.</span><span class="n">Modulus</span><span class="p">);</span>
+    <span class="n">var</span> <span class="n">exponent</span> <span class="p">=</span> <span class="nf">ConvertBigInteger</span><span class="p">(</span><span class="n">publicKey</span><span class="p">.</span><span class="n">Exponent</span><span class="p">);</span>
 
-    int i = 0;
-    while (i &lt; encryptBytes.Length)
-    {
-        // 密文长度必须小于密钥长度
-        var temp = new byte[Math.Min(encryptBytes.Length-i, publicKey.Modulus.Length)];
-        Array.Copy(encryptBytes, i, temp, 0, temp.Length);
-        // 分段解密并连接
-        result += Decrypt(temp, exponent, modulus);
-        i += temp.Length;
-    }
-    return result;
-}
+    <span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="p">&lt;</span> <span class="n">encryptBytes</span><span class="p">.</span><span class="n">Length</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// 密文长度必须小于密钥长度
+</span>        <span class="n">var</span> <span class="n">temp</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="p">[</span><span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">encryptBytes</span><span class="p">.</span><span class="n">Length</span><span class="p">-</span><span class="n">i</span><span class="p">,</span> <span class="n">publicKey</span><span class="p">.</span><span class="n">Modulus</span><span class="p">.</span><span class="n">Length</span><span class="p">)];</span>
+        <span class="n">Array</span><span class="p">.</span><span class="nf">Copy</span><span class="p">(</span><span class="n">encryptBytes</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">temp</span><span class="p">.</span><span class="n">Length</span><span class="p">);</span>
+        <span class="c1">// 分段解密并连接
+</span>        <span class="n">result</span> <span class="p">+=</span> <span class="nf">Decrypt</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">modulus</span><span class="p">);</span>
+        <span class="n">i</span> <span class="p">+=</span> <span class="n">temp</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
 
-/// &lt;summary&gt;
+<span class="c1">/// &lt;summary&gt;
 /// RSA 解密
 /// &lt;/summary&gt;
 /// &lt;param name="encryptBytes"&gt;&lt;/param&gt;
 /// &lt;param name="exponent"&gt;&lt;/param&gt;
 /// &lt;param name="modulus"&gt;&lt;/param&gt;
 /// &lt;returns&gt;&lt;/returns&gt;
-private static string Decrypt(byte[] encryptBytes, BigInteger exponent, BigInteger modulus)
-{
-    var value = ConvertBigInteger(encryptBytes);
-    // 密文 ^ publicExponent % modulus = 原文
-    var result = BigInteger.ModPow(value, exponent, modulus);
+</span><span class="k">private</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">Decrypt</span><span class="p">(</span><span class="kt">byte</span><span class="p">[]</span> <span class="n">encryptBytes</span><span class="p">,</span> <span class="n">BigInteger</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">BigInteger</span> <span class="n">modulus</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">var</span> <span class="k">value</span> <span class="p">=</span> <span class="nf">ConvertBigInteger</span><span class="p">(</span><span class="n">encryptBytes</span><span class="p">);</span>
+    <span class="c1">// 密文 ^ publicExponent % modulus = 原文
+</span>    <span class="n">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">BigInteger</span><span class="p">.</span><span class="nf">ModPow</span><span class="p">(</span><span class="k">value</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">modulus</span><span class="p">);</span>
 
-    byte[] resultBytes = result.ToByteArray();
-    resultBytes = resultBytes.TakeWhile(b =&gt; b != 0).ToArray(); // 排除掉尾部的空数据
-    Array.Reverse(resultBytes); // 调整字节序
+    <span class="kt">byte</span><span class="p">[]</span> <span class="n">resultBytes</span> <span class="p">=</span> <span class="n">result</span><span class="p">.</span><span class="nf">ToByteArray</span><span class="p">();</span>
+    <span class="n">resultBytes</span> <span class="p">=</span> <span class="n">resultBytes</span><span class="p">.</span><span class="nf">TakeWhile</span><span class="p">(</span><span class="n">b</span> <span class="p">=&gt;</span> <span class="n">b</span> <span class="p">!=</span> <span class="m">0</span><span class="p">).</span><span class="nf">ToArray</span><span class="p">();</span> <span class="c1">// 排除掉尾部的空数据
+</span>    <span class="n">Array</span><span class="p">.</span><span class="nf">Reverse</span><span class="p">(</span><span class="n">resultBytes</span><span class="p">);</span> <span class="c1">// 调整字节序
+</span>
+    <span class="k">return</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="nf">GetString</span><span class="p">(</span><span class="n">resultBytes</span><span class="p">);</span>
+<span class="p">}</span>
 
-    return Encoding.UTF8.GetString(resultBytes);
-}
-
-/// &lt;summary&gt;
+<span class="c1">/// &lt;summary&gt;
 /// 字节数组转换为大整数
 /// &lt;/summary&gt;
 /// &lt;param name="originBytes"&gt;&lt;/param&gt;
 /// &lt;returns&gt;&lt;/returns&gt;
-private static BigInteger ConvertBigInteger(byte[] originBytes)
-{
-    Array.Reverse(originBytes); // 需要调整字节序，BigIntenger 需要 little-endian
-    if ((originBytes[originBytes.Length - 1] &amp; 0x80) &gt; 0) // 如果最后一个字节第一位为1即负数，追加一个 00 避免错误
-    {
-        var temp = new byte[originBytes.Length];
-        Array.Copy(originBytes, temp, originBytes.Length);
-        originBytes = new byte[temp.Length + 1];
-        Array.Copy(temp, originBytes, temp.Length);
-    }
-    return new BigInteger(originBytes);
-}
-</code></pre>
-
+</span><span class="k">private</span> <span class="k">static</span> <span class="n">BigInteger</span> <span class="nf">ConvertBigInteger</span><span class="p">(</span><span class="kt">byte</span><span class="p">[]</span> <span class="n">originBytes</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Array</span><span class="p">.</span><span class="nf">Reverse</span><span class="p">(</span><span class="n">originBytes</span><span class="p">);</span> <span class="c1">// 需要调整字节序，BigIntenger 需要 little-endian
+</span>    <span class="k">if</span> <span class="p">((</span><span class="n">originBytes</span><span class="p">[</span><span class="n">originBytes</span><span class="p">.</span><span class="n">Length</span> <span class="p">-</span> <span class="m">1</span><span class="p">]</span> <span class="p">&amp;</span> <span class="m">0x80</span><span class="p">)</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span> <span class="c1">// 如果最后一个字节第一位为1即负数，追加一个 00 避免错误
+</span>    <span class="p">{</span>
+        <span class="n">var</span> <span class="n">temp</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="p">[</span><span class="n">originBytes</span><span class="p">.</span><span class="n">Length</span><span class="p">];</span>
+        <span class="n">Array</span><span class="p">.</span><span class="nf">Copy</span><span class="p">(</span><span class="n">originBytes</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">originBytes</span><span class="p">.</span><span class="n">Length</span><span class="p">);</span>
+        <span class="n">originBytes</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="p">[</span><span class="n">temp</span><span class="p">.</span><span class="n">Length</span> <span class="p">+</span> <span class="m">1</span><span class="p">];</span>
+        <span class="n">Array</span><span class="p">.</span><span class="nf">Copy</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">originBytes</span><span class="p">,</span> <span class="n">temp</span><span class="p">.</span><span class="n">Length</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">BigInteger</span><span class="p">(</span><span class="n">originBytes</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>以上是 C# 公钥解密 RSA 的完整算法实现。谢谢大家，Fuck 微软。</p>
+
 <div class="footnotes">
-<hr/>
+<hr>
 <ol>
-<li id="fn:1">
-<p>已知 a 和 c 互质，如果 a*b%c=1，那 b 就是 a 对于 c 的模反元素。<a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
-<li id="fn:2">
-<p>量子算法利用量子的叠加态同时进行更多的运算<strike>，可以制造平行世界（出自<a href="http://book.douban.com/subject/3417499/" target="_blank">《原始人类》</a>）</strike>。<a href="#fnref:2" rev="footnote">&#8617;</a></p></li>
-<li id="fn:3">
-<p>出自<a href="http://book.douban.com/subject/1057206/" target="_blank">《数字城堡》</a>，在书中 NSA 利用这台计算机能够破解任何密码。<a href="#fnref:3" rev="footnote">&#8617;</a></p></li>
+
+<li id="fn1">
+<p>已知 a 和 c 互质，如果 a*b%c=1，那 b 就是 a 对于 c 的模反元素。&nbsp;<a href="#fnref1" rev="footnote">&#8617;</a></p>
+</li>
+
+<li id="fn2">
+<p>量子算法利用量子的叠加态同时进行更多的运算<strike>，可以制造平行世界（出自<a href="http://book.douban.com/subject/3417499/" target="_blank">《原始人类》</a>）</strike>。&nbsp;<a href="#fnref2" rev="footnote">&#8617;</a></p>
+</li>
+
+<li id="fn3">
+<p>出自<a href="http://book.douban.com/subject/1057206/" target="_blank">《数字城堡》</a>，在书中 NSA 利用这台计算机能够破解任何密码。&nbsp;<a href="#fnref3" rev="footnote">&#8617;</a></p>
+</li>
+
 </ol>
 </div>
-
 
   </article>
 
